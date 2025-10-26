@@ -1,0 +1,14 @@
+# Ignore environment variables
+.env
+
+# Python cache / virtualenvs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db-journal
+venv/
+
+# Node / frontend build cache (if we add it later)
+node_modules/
+dist/
