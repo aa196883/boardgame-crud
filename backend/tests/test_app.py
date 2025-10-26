@@ -15,7 +15,8 @@ from backend.app import BoardGame, TABLE_NAME, create_app
 
 CREATE_TABLE_SQL = f"""
 CREATE TABLE {TABLE_NAME} (
-    nom_du_jeu TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom_du_jeu TEXT NOT NULL UNIQUE,
     temps_de_jeu TEXT,
     duree_min_minutes INTEGER,
     duree_max_minutes INTEGER,
@@ -140,3 +141,25 @@ def test_delete_game(client):
 def test_cors_headers(client):
     response = client.get("/games")
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
+
+
+def test_database_schema_constraints(app):
+    db_path = Path(app.config["GAMES_DB_PATH"])
+    with sqlite3.connect(db_path) as connection:
+        cursor = connection.execute(f"PRAGMA table_info({TABLE_NAME})")
+        info = {row[1]: row for row in cursor.fetchall()}
+
+        assert info["id"][5] == 1  # primary key flag
+        assert info["nom_du_jeu"][3] == 1  # NOT NULL constraint
+
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                f"INSERT INTO {TABLE_NAME} (nom_du_jeu) VALUES (?)",
+                (None,),
+            )
+
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                f"INSERT INTO {TABLE_NAME} (nom_du_jeu) VALUES (?)",
+                ("Test Game",),
+            )
