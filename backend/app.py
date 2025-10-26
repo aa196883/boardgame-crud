@@ -8,7 +8,7 @@ from typing import Any, Mapping, Optional
 
 from flask import Flask, abort, jsonify, request
 
-from .text_to_sql import generate_sql_from_question, is_sql_safe
+from text_to_sql import generate_sql_from_question, is_sql_safe
 from flask_cors import CORS
 
 TABLE_NAME = "jeux"
