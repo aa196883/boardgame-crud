@@ -56,10 +56,24 @@ The backend uses a language model to translate these sentences into valid SQL qu
 
 ### 📋 User Interface
 
-- Emphasis on simplicity and readability  
-- Table view for quick browsing of results  
-- Works on both desktop and mobile browsers  
-- Intuitive forms for adding or updating entries  
+- Emphasis on simplicity and readability
+- Table view for quick browsing of results
+- Works on both desktop and mobile browsers
+- Intuitive forms for adding or updating entries
+
+### 🧱 Frontend architecture (Vue)
+
+The web client now relies on the **Vue runtime** that is shipped with the Vue library. This runtime bundle provides the `createApp`, `ref`, `reactive`, `computed`, and lifecycle utilities that power the component tree and its reactivity system. In our case it is loaded from a `<script>` tag in `frontend/index.html`, making the Vue APIs available on `window.Vue` so `initApp` can wire everything together.【F:frontend/index.html†L9-L18】【F:frontend/main.js†L247-L270】
+
+The Vue application is **mounted** on the DOM element with the `id="app"`. Mounting is the process where Vue takes control of that placeholder node, renders the root component into it, and keeps the HTML in sync with the reactive state. You can see this in `frontend/main.js` where we grab the element via `document.getElementById('app')` and pass it to `createApp(...).mount(...)`.【F:frontend/main.js†L271-L314】【F:frontend/main.js†L532-L544】
+
+Inside `initApp`, we declare three core components:
+
+- `RootComponent` orchestrates data fetching, the search form, and CRUD workflows using Vue refs, computed properties, and lifecycle hooks.【F:frontend/main.js†L314-L530】
+- `GameCard` displays the compact card view for each search result and emits a `select` event when clicked so the root component can open the detail view.【F:frontend/main.js†L290-L313】
+- `GameDetail` renders the expanded information panel when a card is selected and exposes a `close` event to return to the grid.【F:frontend/main.js†L314-L351】
+
+When the user types in the search bar, `RootComponent` updates reactive state, recomputes filtered results through `analyzeQuery`, and renders the matching `GameCard` instances. Clicking a card stores the chosen game in `selectedGame`, which triggers Vue to swap the card grid for the `GameDetail` component. Vue's runtime handles these UI transitions automatically by observing the reactive data and updating the DOM efficiently.【F:frontend/main.js†L350-L530】
 
 ---
 
