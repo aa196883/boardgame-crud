@@ -113,6 +113,35 @@ def test_rejects_non_select_statements(client):
     assert response.status_code == 400
 
 
+def test_natural_language_question(client, monkeypatch):
+    captured = {}
+
+    def fake_generate(question: str) -> str:
+        captured["question"] = question
+        return "SELECT * FROM jeux ORDER BY nom_du_jeu"
+
+    monkeypatch.setattr("backend.app.generate_sql_from_question", fake_generate)
+
+    response = client.get("/games", query_string={"question": "liste des jeux"})
+
+    assert response.status_code == 200
+    assert captured["question"] == "liste des jeux"
+    payload = response.get_json()
+    assert isinstance(payload, list)
+
+
+def test_natural_language_rejects_unsafe_sql(client, monkeypatch):
+
+    def fake_generate(_: str) -> str:
+        return "DROP TABLE jeux"
+
+    monkeypatch.setattr("backend.app.generate_sql_from_question", fake_generate)
+
+    response = client.get("/games", query_string={"question": "supprimer"})
+
+    assert response.status_code == 400
+
+
 @pytest.fixture()
 def client(app):
     return app.test_client()
