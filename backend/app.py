@@ -113,12 +113,26 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     @app.get("/games")
     def list_games() -> Any:
-        db_file = _get_db_path(app)
-        with _connect(db_file) as connection:
-            cursor = connection.execute(
-                f"SELECT * FROM {TABLE_NAME} ORDER BY nom_du_jeu"
+        sql_query = request.args.get("sql")
+        if sql_query:
+            normalized = sql_query.lstrip().lower()
+            if not normalized.startswith("select"):
+                abort(400, description="Only SELECT statements are allowed.")
+            query = sql_query
+        else:
+            query = (
+                f"SELECT * FROM {TABLE_NAME} "
+                "ORDER BY nom_du_jeu COLLATE NOCASE"
             )
-            rows = cursor.fetchall()
+
+        db_file = _get_db_path(app)
+        try:
+            with _connect(db_file) as connection:
+                cursor = connection.execute(query)
+                rows = cursor.fetchall()
+        except sqlite3.DatabaseError as exc:
+            abort(400, description=f"Invalid SQL query: {exc}")
+
         games = [BoardGame.from_row(row).to_dict() for row in rows]
         return jsonify(games)
 

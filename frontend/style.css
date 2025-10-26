@@ -249,44 +249,73 @@ html, body {
   font-weight: 500;
 }
 
-/* ----- RESULTS GRID (mode read) ----------------------------------------- */
+/* ----- RESULTS TABLE (mode read) ---------------------------------------- */
 
-.results-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+.results-table {
+  padding: 0;
   margin-top: 1rem;
 }
 
-@media (min-width: 600px) {
-  .results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(240px,100%), 1fr));
-  }
+.results-table .table-scroll {
+  overflow-x: auto;
 }
 
-.game-card {
-  cursor: default;
-  transition: box-shadow 0.12s ease, transform 0.12s ease;
-}
-
-.game-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
-}
-
-.game-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-}
-
-.game-meta {
-  list-style: none;
-  color: var(--text-dim);
+.search-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.85rem;
-  display: grid;
-  gap: 0.25rem;
+  min-width: 520px;
+}
+
+.search-table thead tr {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.search-table th,
+.search-table td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.search-table tbody tr:hover td {
+  background: rgba(0,0,0,0.015);
+}
+
+.search-table th[data-sort-key] {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.search-table th[data-sort-key]::after {
+  content: '\25B4\25BE';
+  font-size: 0.55rem;
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.2;
+  letter-spacing: 0.1rem;
+}
+
+.search-table th[data-sort-key][data-active-sort="asc"]::after {
+  content: '\25B4';
+  opacity: 0.6;
+}
+
+.search-table th[data-sort-key][data-active-sort="desc"]::after {
+  content: '\25BE';
+  opacity: 0.6;
+}
+
+.search-table th[data-sort-key].is-sorted {
+  color: var(--text-main);
 }
 
 /* empty state messages */

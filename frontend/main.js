@@ -1,4 +1,5 @@
 const DEFAULT_API_BASE_URL = 'http://localhost:5000';
+const DB_TABLE_NAME = 'jeux';
 
 const NUMBER_REGEX = /\d+/g;
 
@@ -237,39 +238,55 @@ function renderExtractChips(container, extracts) {
   `;
 }
 
-function renderResults(resultsList, emptyState, games) {
-  resultsList.innerHTML = '';
+function renderResults(resultsBody, emptyState, games) {
+  const table = resultsBody.closest('table');
+  resultsBody.innerHTML = '';
 
   if (!games || games.length === 0) {
     emptyState.classList.remove('hidden');
+    if (table) {
+      table.classList.add('is-empty');
+    }
     return;
   }
 
   emptyState.classList.add('hidden');
-  const doc = resultsList.ownerDocument || document;
+  if (table) {
+    table.classList.remove('is-empty');
+  }
+
+  const doc = resultsBody.ownerDocument || document;
 
   games.forEach((game) => {
-    const card = doc.createElement('article');
-    card.className = 'game-card card';
+    const row = doc.createElement('tr');
 
-    const durationLabel = formatDuration(game);
-    const playersLabel = formatPlayers(game);
-    const metaItems = [];
+    const nameCell = doc.createElement('td');
+    nameCell.textContent = game.nom;
 
-    if (durationLabel) metaItems.push(`⏱ ${durationLabel}`);
-    if (playersLabel) metaItems.push(`👥 ${playersLabel}`);
-    if (game.type) metaItems.push(`🎭 ${game.type}`);
-    if (game.complexite) metaItems.push(`⚖️ ${game.complexite}`);
+    const playersCell = doc.createElement('td');
+    playersCell.textContent = formatPlayers(game) || '—';
 
-    card.innerHTML = `
-      <h2 class="game-name">${game.nom}</h2>
-      <ul class="game-meta">
-        ${metaItems.map((item) => `<li>${item}</li>`).join('')}
-      </ul>
-      ${game.tags.length ? `<p class="game-tags">${game.tags.map((tag) => `#${tag}`).join(' ')}</p>` : ''}
-    `;
+    const durationCell = doc.createElement('td');
+    durationCell.textContent = formatDuration(game) || '—';
 
-    resultsList.appendChild(card);
+    const typeCell = doc.createElement('td');
+    typeCell.textContent = game.type || '—';
+
+    const complexiteCell = doc.createElement('td');
+    complexiteCell.textContent = game.complexite || '—';
+
+    const tagsCell = doc.createElement('td');
+    tagsCell.textContent =
+      game.tags.length > 0 ? game.tags.map((tag) => `#${tag}`).join(' ') : '—';
+
+    row.appendChild(nameCell);
+    row.appendChild(playersCell);
+    row.appendChild(durationCell);
+    row.appendChild(typeCell);
+    row.appendChild(complexiteCell);
+    row.appendChild(tagsCell);
+
+    resultsBody.appendChild(row);
   });
 }
 
@@ -304,10 +321,32 @@ function renderAdminTable(documentRef, tableBody, emptyAdmin, games) {
   });
 }
 
-function sortGamesByName(games) {
-  return [...games].sort((a, b) =>
-    a.nom.localeCompare(b.nom, 'fr', { ignorePunctuation: true })
-  );
+function buildSearchSql(sortKey, direction = 'asc') {
+  const dir = direction === 'desc' ? 'DESC' : 'ASC';
+  switch (sortKey) {
+    case 'players':
+      return `SELECT * FROM ${DB_TABLE_NAME} ORDER BY ` +
+        `COALESCE(joueurs_min, joueurs_max) ${dir}, ` +
+        `COALESCE(joueurs_max, joueurs_min) ${dir}, ` +
+        `nom_du_jeu COLLATE NOCASE ASC`;
+    case 'duration':
+      return `SELECT * FROM ${DB_TABLE_NAME} ORDER BY ` +
+        `COALESCE(duree_min_minutes, duree_max_minutes) ${dir}, ` +
+        `COALESCE(duree_max_minutes, duree_min_minutes) ${dir}, ` +
+        `nom_du_jeu COLLATE NOCASE ASC`;
+    case 'type':
+      return `SELECT * FROM ${DB_TABLE_NAME} ORDER BY ` +
+        `type_de_jeu COLLATE NOCASE ${dir}, ` +
+        `nom_du_jeu COLLATE NOCASE ASC`;
+    case 'complexite':
+      return `SELECT * FROM ${DB_TABLE_NAME} ORDER BY ` +
+        `en_equipe COLLATE NOCASE ${dir}, ` +
+        `nom_du_jeu COLLATE NOCASE ASC`;
+    case 'name':
+    default:
+      return `SELECT * FROM ${DB_TABLE_NAME} ORDER BY ` +
+        `nom_du_jeu COLLATE NOCASE ${dir}`;
+  }
 }
 
 function createApiCaller(fetchImpl, baseUrl) {
@@ -388,6 +427,9 @@ export function initApp({
   const resultsList = getRequiredElement(documentRef, '#results-list');
   const emptyState = getRequiredElement(documentRef, '#empty-state');
   const queryExtractBox = getRequiredElement(documentRef, '#query-extract');
+  const sortHeaders = Array.from(
+    documentRef.querySelectorAll('.search-table th[data-sort-key]')
+  );
 
   const adminTableBody = getRequiredElement(documentRef, '#games-admin-list');
   const emptyAdmin = getRequiredElement(documentRef, '#empty-admin');
@@ -407,6 +449,11 @@ export function initApp({
   const state = {
     games: [],
     editingOriginalName: null,
+    searchSort: {
+      key: 'name',
+      direction: 'asc',
+      sql: buildSearchSql('name', 'asc'),
+    },
   };
 
   function setMode(mode) {
@@ -463,13 +510,52 @@ export function initApp({
     renderResults(resultsList, emptyState, filtered);
   }
 
+  function updateSortIndicators() {
+    sortHeaders.forEach((header) => {
+      const key = header?.dataset?.sortKey;
+      if (!key) return;
+      if (state.searchSort.key === key) {
+        header.classList.add('is-sorted');
+        header.setAttribute('data-active-sort', state.searchSort.direction);
+        header.setAttribute(
+          'aria-sort',
+          state.searchSort.direction === 'asc' ? 'ascending' : 'descending'
+        );
+      } else {
+        header.classList.remove('is-sorted');
+        header.removeAttribute('data-active-sort');
+        header.removeAttribute('aria-sort');
+      }
+    });
+  }
+
+  function applySort(sortKey) {
+    if (!sortKey) return;
+    let direction = 'asc';
+    if (state.searchSort.key === sortKey) {
+      direction = state.searchSort.direction === 'asc' ? 'desc' : 'asc';
+    }
+
+    state.searchSort = {
+      key: sortKey,
+      direction,
+      sql: buildSearchSql(sortKey, direction),
+    };
+
+    updateSortIndicators();
+    refreshGames();
+  }
+
   async function refreshGames() {
     try {
-      const data = await callApi('/games');
+      const sql = state.searchSort?.sql ?? buildSearchSql('name', 'asc');
+      const endpoint = sql ? `/games?sql=${encodeURIComponent(sql)}` : '/games';
+      const data = await callApi(endpoint);
       const mapped = data.map((item) => mapApiGame(item));
-      state.games = sortGamesByName(mapped);
+      state.games = mapped;
       renderAdminTable(documentRef, adminTableBody, emptyAdmin, state.games);
       updateReadMode(searchInput.value.trim());
+      updateSortIndicators();
     } catch (error) {
       console.error('Erreur lors du chargement des jeux', error);
       alert(`Impossible de charger les jeux : ${error.message}`);
@@ -542,6 +628,13 @@ export function initApp({
     });
   });
 
+  sortHeaders.forEach((header) => {
+    header.addEventListener('click', () => {
+      const sortKey = header?.dataset?.sortKey;
+      applySort(sortKey);
+    });
+  });
+
   searchBtn.addEventListener('click', handleSearch);
   searchInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
@@ -575,6 +668,7 @@ export function initApp({
   });
 
   setMode('read');
+  updateSortIndicators();
   refreshGames();
 
   return {
