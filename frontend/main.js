@@ -1,3 +1,8 @@
+import { createGameCardComponent } from './components/GameCard.js';
+import { createGameDetailComponent } from './components/GameDetail.js';
+import { createSearchModeComponent } from './components/SearchMode.js';
+import { createEditModeComponent } from './components/EditMode.js';
+
 const DEFAULT_API_BASE_URL = 'http://localhost:5000';
 
 const NUMBER_REGEX = /\d+/g;
@@ -276,93 +281,34 @@ export async function initApp({
     throw new Error('Missing required element: #app');
   }
 
-  const GameCard = {
-    name: 'GameCard',
-    props: {
-      game: { type: Object, required: true },
-    },
-    emits: ['select'],
-    setup(props, { emit }) {
-      const durationLabel = computed(() => formatDuration(props.game));
-      const playersLabel = computed(() => formatPlayers(props.game));
-      const tags = computed(() => props.game.tags || []);
-      const handleClick = () => emit('select', props.game);
-      return { durationLabel, playersLabel, tags, handleClick };
-    },
-    template: `
-      <article class="game-card card" @click="handleClick">
-        <h2 class="game-name">{{ game.nom }}</h2>
-        <ul class="game-meta">
-          <li v-if="durationLabel">⏱ {{ durationLabel }}</li>
-          <li v-if="playersLabel">👥 {{ playersLabel }}</li>
-          <li v-if="game.type">🎭 {{ game.type }}</li>
-          <li v-if="game.complexite">⚖️ {{ game.complexite }}</li>
-        </ul>
-        <p v-if="tags.length" class="game-tags">
-          <span v-for="tag in tags" :key="tag">#{{ tag }}</span>
-        </p>
-      </article>
-    `,
-  };
+  const GameCard = createGameCardComponent({
+    computed,
+    formatDuration,
+    formatPlayers,
+  });
 
-  const GameDetail = {
-    name: 'GameDetail',
-    props: {
-      game: { type: Object, required: true },
-    },
-    emits: ['close'],
-    setup(props, { emit }) {
-      const durationLabel = computed(() => formatDuration(props.game));
-      const playersLabel = computed(() => formatPlayers(props.game));
-      const tags = computed(() => props.game.tags || []);
-      const close = () => emit('close');
-      return { durationLabel, playersLabel, tags, close };
-    },
-    template: `
-      <article class="game-detail card">
-        <div class="detail-header">
-          <button class="ghost-btn detail-back" type="button" @click="close">← Retour aux résultats</button>
-        </div>
-        <h2 class="game-name">{{ game.nom }}</h2>
-        <ul class="game-meta detail-meta">
-          <li v-if="durationLabel">⏱ {{ durationLabel }}</li>
-          <li v-if="playersLabel">👥 {{ playersLabel }}</li>
-          <li v-if="game.type">🎭 {{ game.type }}</li>
-          <li v-if="game.complexite">⚖️ {{ game.complexite }}</li>
-          <li v-if="game.everyone">✨ Accessible : {{ game.everyone }}</li>
-        </ul>
-        <section v-if="tags.length" class="detail-tags">
-          <h3>Tags</h3>
-          <p class="game-tags">
-            <span v-for="tag in tags" :key="tag">#{{ tag }}</span>
-          </p>
-        </section>
-        <section class="detail-raw">
-          <h3>Informations complémentaires</h3>
-          <dl>
-            <div v-if="game.playTime">
-              <dt>Durée annoncée</dt>
-              <dd>{{ game.playTime }}</dd>
-            </div>
-            <div v-if="game.playerCount">
-              <dt>Nombre de joueurs</dt>
-              <dd>{{ game.playerCount }}</dd>
-            </div>
-            <div v-if="game.raw?.special_support">
-              <dt>Support particulier</dt>
-              <dd>{{ game.raw.special_support }}</dd>
-            </div>
-          </dl>
-        </section>
-      </article>
-    `,
-  };
+  const GameDetail = createGameDetailComponent({
+    computed,
+    formatDuration,
+    formatPlayers,
+  });
+
+  const SearchMode = createSearchModeComponent({
+    computed,
+    GameCard,
+    GameDetail,
+  });
+
+  const EditMode = createEditModeComponent({
+    formatDuration,
+    formatPlayers,
+  });
 
   let controller = null;
 
   const RootComponent = {
     name: 'BoardGameApp',
-    components: { GameCard, GameDetail },
+    components: { GameCard, GameDetail, SearchMode, EditMode },
     setup() {
       const mode = ref('read');
       const searchInput = ref('');
@@ -397,6 +343,10 @@ export async function initApp({
         if (value === 'read') {
           selectedGame.value = null;
         }
+      };
+
+      const updateSearchInput = (value) => {
+        searchInput.value = value;
       };
 
       const performSearch = () => {
@@ -533,6 +483,7 @@ export async function initApp({
         mode,
         setMode,
         searchInput,
+        updateSearchInput,
         performSearch,
         games,
         filteredGames,
@@ -589,60 +540,17 @@ export async function initApp({
             class="panel"
             :class="{ visible: mode === 'read', hidden: mode !== 'read' }"
           >
-            <div class="search-card card">
-              <label for="natural-query" class="field-label">Recherche intelligente</label>
-              <div class="search-row">
-                <input
-                  id="natural-query"
-                  type="text"
-                  class="text-input"
-                  v-model="searchInput"
-                  placeholder="ex : jeux compétitifs de moins de 10 minutes pour 4 joueurs"
-                  @keyup.enter="performSearch"
-                />
-                <button class="primary-btn" type="button" @click="performSearch">Chercher</button>
-              </div>
-              <p class="hint">
-                Tu peux poser la question en français. Exemple :
-                « Je veux un jeu coopératif rapide pour 2 joueurs ».
-              </p>
-            </div>
-
-            <div class="query-extract card" :class="{ active: searchExtracts.length }">
-              <template v-if="searchExtracts.length">
-                <div class="extract-title">Filtre détecté</div>
-                <ul class="extract-list">
-                  <li v-for="item in searchExtracts" :key="item">{{ item }}</li>
-                </ul>
-              </template>
-              <p v-else class="hint">Tape une requête pour filtrer les jeux.</p>
-            </div>
-
-            <div v-if="isLoading" class="card loading-card">Chargement des jeux…</div>
-            <div v-else>
-              <GameDetail
-                v-if="selectedGame"
-                :game="selectedGame"
-                @close="closeDetails"
-              />
-              <template v-else>
-                <div
-                  id="empty-state"
-                  class="empty-state"
-                  v-if="!filteredGames.length"
-                >
-                  Aucun jeu trouvé. Essaie une autre recherche 🙂
-                </div>
-                <div id="results-list" class="results-grid" v-else>
-                  <GameCard
-                    v-for="game in filteredGames"
-                    :key="game.nom"
-                    :game="game"
-                    @select="openDetails"
-                  />
-                </div>
-              </template>
-            </div>
+            <SearchMode
+              :search-input="searchInput"
+              :search-extracts="searchExtracts"
+              :filtered-games="filteredGames"
+              :selected-game="selectedGame"
+              :is-loading="isLoading"
+              @update:search-input="updateSearchInput"
+              @perform-search="performSearch"
+              @open-details="openDetails"
+              @close-details="closeDetails"
+            />
           </section>
 
           <section
@@ -650,98 +558,17 @@ export async function initApp({
             class="panel"
             :class="{ visible: mode === 'edit', hidden: mode !== 'edit' }"
           >
-            <div class="edit-layout">
-              <div class="edit-form card">
-                <h2>{{ formTitle }}</h2>
-                <form @submit.prevent="submitForm">
-                  <div class="form-field">
-                    <label for="game-name" class="field-label">Nom du jeu</label>
-                    <input id="game-name" type="text" class="text-input" v-model="formState.nom" required />
-                  </div>
-
-                  <div class="form-field inline-fields">
-                    <div>
-                      <label for="min-players" class="field-label">Joueurs (min)</label>
-                      <input id="min-players" type="number" class="text-input" v-model="formState.minJoueurs" min="1" />
-                    </div>
-                    <div>
-                      <label for="max-players" class="field-label">Joueurs (max)</label>
-                      <input id="max-players" type="number" class="text-input" v-model="formState.maxJoueurs" min="1" />
-                    </div>
-                  </div>
-
-                  <div class="form-field inline-fields">
-                    <div>
-                      <label for="duration-min" class="field-label">Durée (min)</label>
-                      <input id="duration-min" type="number" class="text-input" v-model="formState.dureeMin" min="1" />
-                    </div>
-                    <div>
-                      <label for="duration-max" class="field-label">Durée (max)</label>
-                      <input id="duration-max" type="number" class="text-input" v-model="formState.dureeMax" min="1" />
-                    </div>
-                  </div>
-
-                  <div class="form-field">
-                    <label for="type-jeu" class="field-label">Type de jeu</label>
-                    <input id="type-jeu" type="text" class="text-input" v-model="formState.type" placeholder="ex : Coopératif, Culture générale" />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="complexite" class="field-label">Jeu en équipe ?</label>
-                    <input id="complexite" type="text" class="text-input" v-model="formState.complexite" placeholder="ex : Oui, Non, Au choix" />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="tags" class="field-label">Tags</label>
-                    <input
-                      id="tags"
-                      type="text"
-                      class="text-input"
-                      v-model="formState.tagsText"
-                      placeholder="ex : bluff, party game, coopération"
-                    />
-                    <p class="hint">Sépare les tags par des virgules.</p>
-                  </div>
-
-                  <div class="form-actions">
-                    <button class="primary-btn" type="submit" :disabled="saving">
-                      {{ saving ? 'Enregistrement…' : editingOriginalName ? 'Mettre à jour' : 'Enregistrer' }}
-                    </button>
-                    <button class="ghost-btn" type="button" @click="clearForm">Annuler</button>
-                  </div>
-                </form>
-              </div>
-
-              <div class="edit-table card">
-                <h2>Jeux enregistrés</h2>
-                <table class="game-table" v-if="games.length">
-                  <thead>
-                    <tr>
-                      <th>Nom</th>
-                      <th>Joueurs</th>
-                      <th>Durée</th>
-                      <th>Type</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="games-admin-list">
-                    <tr v-for="game in games" :key="game.nom">
-                      <td>{{ game.nom }}</td>
-                      <td>{{ formatPlayers(game) || '—' }}</td>
-                      <td>{{ formatDuration(game) || '—' }}</td>
-                      <td>{{ game.type || '—' }}</td>
-                      <td class="row-actions">
-                        <button class="link-btn edit-btn" type="button" @click="editGame(game)">Modifier</button>
-                        <button class="link-btn danger-btn" type="button" @click="deleteGame(game)">Supprimer</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div id="empty-admin" class="empty-state" v-else>
-                  Aucun jeu pour l’instant.
-                </div>
-              </div>
-            </div>
+            <EditMode
+              :form-state="formState"
+              :form-title="formTitle"
+              :saving="saving"
+              :games="games"
+              :editing-original-name="editingOriginalName"
+              @submit="submitForm"
+              @clear="clearForm"
+              @edit-game="editGame"
+              @delete-game="deleteGame"
+            />
           </section>
         </main>
 
