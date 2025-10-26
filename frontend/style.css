@@ -265,7 +265,7 @@ html, body {
 }
 
 .game-card {
-  cursor: default;
+  cursor: pointer;
   transition: box-shadow 0.12s ease, transform 0.12s ease;
 }
 
@@ -287,6 +287,23 @@ html, body {
   font-size: 0.85rem;
   display: grid;
   gap: 0.25rem;
+}
+
+.game-tags {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--accent-text);
+}
+
+.game-tags span {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-solid);
+  border-radius: 999px;
+  padding: 0.35rem 0.6rem;
+  font-weight: 500;
 }
 
 /* empty state messages */
@@ -422,4 +439,61 @@ html, body {
 
 .danger-btn:hover {
   text-decoration: underline;
+}
+
+.game-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.detail-back {
+  margin-bottom: 0.75rem;
+  align-self: flex-start;
+}
+
+.detail-meta {
+  gap: 0.4rem;
+}
+
+.detail-tags h3,
+.detail-raw h3 {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.detail-raw dl {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.detail-raw dt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.detail-raw dd {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.loading-card {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.error-banner {
+  border-left: 4px solid var(--danger-text);
+  color: var(--danger-text);
+  font-weight: 600;
 }
