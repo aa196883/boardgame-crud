@@ -33,7 +33,7 @@ def generate_sql_from_question(question: str) -> str:
     - nombre_de_joueurs TEXT : ex "2 à 4"
     - joueurs_min INTEGER : nombre minimum de joueurs
     - joueurs_max INTEGER : nombre maximum de joueurs
-    - en_equipe TEXT : "oui" si jeu en équipes, "non" sinon
+    - en_equipe TEXT : "OUI" si jeu en équipes, "AU CHOIX" si en équipes possibles, "NON" sinon
     - support_particulier TEXT : ex "Cartes, Dés"
     - type_de_jeu TEXT : ex "Connaissances, Rapidité", "Compétitif"
     - tout_le_monde_peut_jouer TEXT : "oui" si accessible à tout le monde, "non" sinon, ou indique un élément spécifique (ex "calculs", "Réflexion, culture précise")
@@ -47,6 +47,7 @@ def generate_sql_from_question(question: str) -> str:
     - Inclue un ORDER BY nom_du_jeu.
     - Retourne toutes les colonnes avec SELECT *.
     - Pour les filtres de texte, utilise toujours LIKE avec des % et des guillemets simples, jamais =.
+    - Pour les jeux en équipes, "OUI" et "AU CHOIX" sont acceptables si on veut inclure les jeux en équipes.
     - Ne réponds pas avec du texte, uniquement la requête SQL.
     """
 

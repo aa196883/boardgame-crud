@@ -131,6 +131,8 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
                 abort(400, description="Generated SQL failed safety checks.")
 
             query = generated_sql
+
+            print(f"Generated SQL for question '{question}':\n{generated_sql}\n")
         elif sql_query:
             normalized = sql_query.lstrip().lower()
             if not normalized.startswith("select"):
