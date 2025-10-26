@@ -1,0 +1,425 @@
+/* ----- RESET / BASE ------------------------------------------------------ */
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-page: #f7f8fa;
+  --bg-card: #ffffff;
+  --border-soft: #e4e7ee;
+
+  --text-main: #2b2e38;
+  --text-dim: #6b6f80;
+
+  --accent-bg: #cdeff1;         /* pastel bleu-vert clair */
+  --accent-solid: #8ecfd4;      /* pastel bleu-vert un peu + soutenu */
+  --accent-text: #1f2a2c;
+
+  --danger-text: #d56b6b;       /* corail doux */
+  --radius-card: 12px;
+  --radius-btn: 10px;
+  --shadow-card: 0 16px 32px rgba(0,0,0,0.04);
+  --shadow-hover: 0 24px 40px rgba(0,0,0,0.07);
+  --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body {
+  background: var(--bg-page);
+  color: var(--text-main);
+  font-family: var(--font-stack);
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100%;
+}
+
+/* ----- LAYOUT ------------------------------------------------------------ */
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 1.25rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+
+.app-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 600px) {
+  .app-nav {
+    margin-top: 0;
+    align-items: flex-end;
+  }
+}
+
+.app-main {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  color: var(--text-dim);
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 2rem 1rem 3rem;
+}
+
+/* ----- NAV BUTTONS ------------------------------------------------------- */
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-btn);
+  padding: 0.5rem 0.9rem;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+}
+
+.nav-btn-active,
+.nav-btn:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-solid);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-hover);
+  transition: all 0.12s ease;
+}
+
+/* ----- PANELS ------------------------------------------------------------ */
+
+.panel {
+  display: none;
+}
+
+.panel.visible {
+  display: block;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1.25rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* ----- SEARCH AREA (mode read) ------------------------------------------ */
+
+.search-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.search-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 600px) {
+  .search-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.text-input {
+  background: #fff;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-soft);
+  padding: 0.7rem 0.8rem;
+  width: 100%;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.2;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.02);
+  outline: none;
+}
+
+.text-input:focus {
+  border-color: var(--accent-solid);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+}
+
+.primary-btn {
+  appearance: none;
+  border: 0;
+  background: var(--accent-solid);
+  color: var(--accent-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  padding: 0.7rem 1rem;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  white-space: nowrap;
+}
+
+.primary-btn:hover {
+  background: var(--accent-bg);
+  box-shadow: var(--shadow-hover);
+  transition: all 0.12s ease;
+}
+
+.hint {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--text-dim);
+}
+
+/* Query extract chip box */
+.query-extract {
+  display: none;
+}
+
+.query-extract.active {
+  display: block;
+}
+
+.extract-title {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.extract-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.extract-list li {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-solid);
+  border-radius: 999px;
+  color: var(--accent-text);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  padding: 0.4rem 0.6rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+  font-weight: 500;
+}
+
+/* ----- RESULTS GRID (mode read) ----------------------------------------- */
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 600px) {
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(240px,100%), 1fr));
+  }
+}
+
+.game-card {
+  cursor: default;
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.game-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.game-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.game-meta {
+  list-style: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+/* empty state messages */
+.empty-state {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ----- EDIT MODE LAYOUT -------------------------------------------------- */
+
+#mode-edit .edit-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  #mode-edit .edit-layout {
+    grid-template-columns: minmax(280px, 360px) 1fr;
+  }
+}
+
+.edit-form h2,
+.edit-table h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+}
+
+/* ----- FORM -------------------------------------------------------------- */
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.9rem;
+}
+
+.inline-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ghost-btn {
+  appearance: none;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-btn);
+  padding: 0.7rem 1rem;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+}
+
+.ghost-btn:hover {
+  background: #fff;
+  box-shadow: var(--shadow-hover);
+  color: var(--text-main);
+  transition: all 0.12s ease;
+}
+
+/* ----- TABLE (edit mode) ------------------------------------------------- */
+
+.edit-table {
+  overflow-x: auto;
+}
+
+.game-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 400px;
+}
+
+.game-table thead tr {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.game-table th,
+.game-table td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.game-table tbody tr:hover td {
+  background: rgba(0,0,0,0.015);
+}
+
+.row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.link-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin-right: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-solid);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.danger-btn {
+  color: var(--danger-text);
+}
+
+.danger-btn:hover {
+  text-decoration: underline;
+}

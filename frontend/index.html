@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bibliothèque de jeux</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header / navigation -->
+  <header class="app-header">
+    <div class="app-header-left">
+      <div class="app-title">🎲 Bibliothèque de jeux</div>
+      <div class="app-subtitle">Recherche & gestion</div>
+    </div>
+
+    <nav class="app-nav">
+      <button class="nav-btn nav-btn-active" data-mode="read">Recherche</button>
+      <button class="nav-btn" data-mode="edit">Édition</button>
+    </nav>
+  </header>
+
+  <main class="app-main">
+
+    <!-- MODE LECTURE / RECHERCHE -->
+    <section id="mode-read" class="panel visible">
+
+      <div class="search-card card">
+        <label for="natural-query" class="field-label">Recherche intelligente</label>
+        <div class="search-row">
+          <input
+            id="natural-query"
+            type="text"
+            class="text-input"
+            placeholder="ex : jeux compétitifs de moins de 10 minutes pour 4 joueurs"
+          />
+          <button class="primary-btn" id="search-btn">Chercher</button>
+        </div>
+        <p class="hint">
+          Tu peux poser la question en français. Exemple :
+          « Je veux un jeu coopératif rapide pour 2 joueurs ».
+        </p>
+      </div>
+
+      <div id="query-extract" class="query-extract card">
+        <!-- Exemple de rendu :
+        <div class="extract-title">Filtre détecté</div>
+        <ul class="extract-list">
+          <li>Compétitif</li>
+          <li>≤ 10 min</li>
+          <li>4 joueurs</li>
+        </ul>
+        -->
+      </div>
+
+      <div id="results-list" class="results-grid">
+        <!-- Chaque carte de jeu -->
+        <!--
+        <article class="game-card card">
+          <h2 class="game-name">The Mind</h2>
+          <ul class="game-meta">
+            <li>⏱ 10 min</li>
+            <li>👥 2 à 4 joueurs</li>
+            <li>🎭 Coopératif</li>
+            <li>⚖️ Complexité : Facile</li>
+          </ul>
+        </article>
+        -->
+      </div>
+
+      <div id="empty-state" class="empty-state hidden">
+        Aucun jeu trouvé. Essaie une autre recherche 🙂
+      </div>
+    </section>
+
+
+    <!-- MODE ÉDITION -->
+    <section id="mode-edit" class="panel hidden">
+
+      <div class="edit-layout">
+
+        <!-- Formulaire d'édition -->
+        <div class="edit-form card">
+          <h2 id="form-title">Nouveau jeu</h2>
+
+          <form id="game-form">
+            <div class="form-field">
+              <label for="game-name" class="field-label">Nom du jeu</label>
+              <input id="game-name" type="text" class="text-input" required />
+            </div>
+
+            <div class="form-field inline-fields">
+              <div>
+                <label for="min-players" class="field-label">Joueurs (min)</label>
+                <input id="min-players" type="number" min="1" class="text-input" />
+              </div>
+              <div>
+                <label for="max-players" class="field-label">Joueurs (max)</label>
+                <input id="max-players" type="number" min="1" class="text-input" />
+              </div>
+            </div>
+
+            <div class="form-field inline-fields">
+              <div>
+                <label for="duration" class="field-label">Durée (minutes)</label>
+                <input id="duration" type="number" min="1" class="text-input" />
+              </div>
+              <div>
+                <label for="type-jeu" class="field-label">Type</label>
+                <select id="type-jeu" class="text-input">
+                  <option value="competitif">Compétitif</option>
+                  <option value="coopératif">Coopératif</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="complexite" class="field-label">Complexité</label>
+              <select id="complexite" class="text-input">
+                <option value="facile">Facile</option>
+                <option value="moyen">Moyen</option>
+                <option value="expert">Expert</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="tags" class="field-label">Tags</label>
+              <input
+                id="tags"
+                type="text"
+                class="text-input"
+                placeholder="ex : bluff, party game, coopération"
+              />
+              <p class="hint">Sépare les tags par des virgules.</p>
+            </div>
+
+            <div class="form-actions">
+              <button class="primary-btn" id="save-btn">Enregistrer</button>
+              <button class="ghost-btn" id="cancel-btn" type="button">Annuler</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tableau des jeux existants -->
+        <div class="edit-table card">
+          <h2>Jeux enregistrés</h2>
+          <table class="game-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Joueurs</th>
+                <th>Durée</th>
+                <th>Type</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="games-admin-list">
+              <!-- Exemple de ligne :
+              <tr>
+                <td>The Mind</td>
+                <td>2-4</td>
+                <td>10 min</td>
+                <td>Coopératif</td>
+                <td class="row-actions">
+                  <button class="link-btn edit-btn">Modifier</button>
+                  <button class="link-btn danger-btn">Supprimer</button>
+                </td>
+              </tr>
+              -->
+            </tbody>
+          </table>
+          <div id="empty-admin" class="empty-state hidden">
+            Aucun jeu pour l’instant.
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    Données privées – usage interne • v0.1
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
