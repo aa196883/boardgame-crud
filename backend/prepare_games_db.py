@@ -240,7 +240,8 @@ def create_database(db_path: Path, jeux: Sequence[Jeu]) -> None:
         cursor.execute(
             f"""
             CREATE TABLE {TABLE_NAME} (
-                nom_du_jeu TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nom_du_jeu TEXT NOT NULL UNIQUE,
                 temps_de_jeu TEXT,
                 duree_min_minutes INTEGER,
                 duree_max_minutes INTEGER,
