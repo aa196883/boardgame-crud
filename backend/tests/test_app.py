@@ -95,6 +95,24 @@ def test_list_games(client):
     assert data[0]["name"] == "Test Game"
 
 
+def test_list_games_accepts_sql_query(client):
+    response = client.get(
+        "/games",
+        query_string={
+            "sql": "SELECT * FROM jeux ORDER BY joueurs_min DESC, nom_du_jeu",
+        },
+    )
+    assert response.status_code == 200
+    data = response.get_json()
+    assert isinstance(data, list)
+    assert data[0]["name"] == "Test Game"
+
+
+def test_rejects_non_select_statements(client):
+    response = client.get("/games", query_string={"sql": "DELETE FROM jeux"})
+    assert response.status_code == 400
+
+
 @pytest.fixture()
 def client(app):
     return app.test_client()

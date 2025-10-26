@@ -54,19 +54,24 @@
         -->
       </div>
 
-      <div id="results-list" class="results-grid">
-        <!-- Chaque carte de jeu -->
-        <!--
-        <article class="game-card card">
-          <h2 class="game-name">The Mind</h2>
-          <ul class="game-meta">
-            <li>⏱ 10 min</li>
-            <li>👥 2 à 4 joueurs</li>
-            <li>🎭 Coopératif</li>
-            <li>⚖️ Complexité : Facile</li>
-          </ul>
-        </article>
-        -->
+      <div class="results-table card">
+        <div class="table-scroll">
+          <table class="game-table search-table" aria-live="polite">
+            <thead>
+              <tr>
+                <th data-sort-key="name" scope="col">Nom</th>
+                <th data-sort-key="players" scope="col">Joueurs</th>
+                <th data-sort-key="duration" scope="col">Durée</th>
+                <th data-sort-key="type" scope="col">Type</th>
+                <th data-sort-key="complexite" scope="col">Équipe</th>
+                <th scope="col">Tags</th>
+              </tr>
+            </thead>
+            <tbody id="results-list">
+              <!-- Les lignes seront injectées ici -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div id="empty-state" class="empty-state hidden">
