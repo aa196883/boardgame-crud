@@ -1,13 +1,25 @@
 import os
-import openai
 import re
-from dotenv import load_dotenv
+
+try:  # pragma: no cover - optional dependency
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - tests may not have python-dotenv
+    def load_dotenv(*_args, **_kwargs):
+        return False
+
+try:  # pragma: no cover - import guard for optional dependency
+    import openai
+except ModuleNotFoundError:  # pragma: no cover - handled at runtime when used
+    openai = None
 
 # Load environment variables from .env file
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+if openai is not None:
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_sql_from_question(question: str) -> str:
+    if openai is None:
+        raise RuntimeError("OpenAI client is not available. Install openai to enable text-to-SQL.")
     # 1. Define schema description
     schema_description = """
     Tu es un assistant SQL. Tu écris uniquement du SQL SQLite.

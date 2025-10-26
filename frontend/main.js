@@ -454,6 +454,10 @@ export function initApp({
       direction: 'asc',
       sql: buildSearchSql('name', 'asc'),
     },
+    lastSearch: {
+      query: '',
+      results: [],
+    },
   };
 
   function setMode(mode) {
@@ -504,10 +508,21 @@ export function initApp({
     state.editingOriginalName = game.raw?.name ?? game.nom;
   }
 
-  function updateReadMode(query) {
-    const { extracts, filtered } = analyzeQuery(query, state.games);
-    renderExtractChips(queryExtractBox, extracts);
-    renderResults(resultsList, emptyState, filtered);
+  function updateReadMode(query, { results } = {}) {
+    const analysis = analyzeQuery(query, state.games);
+    renderExtractChips(queryExtractBox, analysis.extracts);
+
+    if (Array.isArray(results)) {
+      renderResults(resultsList, emptyState, results);
+      return;
+    }
+
+    if (!query) {
+      renderResults(resultsList, emptyState, state.games);
+      return;
+    }
+
+    renderResults(resultsList, emptyState, analysis.filtered);
   }
 
   function updateSortIndicators() {
@@ -554,23 +569,54 @@ export function initApp({
       const mapped = data.map((item) => mapApiGame(item));
       state.games = mapped;
       renderAdminTable(documentRef, adminTableBody, emptyAdmin, state.games);
-      updateReadMode(searchInput.value.trim());
       updateSortIndicators();
+      if (state.lastSearch.query) {
+        await performNaturalSearch(state.lastSearch.query, { silent: true });
+      } else {
+        updateReadMode('', { results: state.games });
+      }
     } catch (error) {
       console.error('Erreur lors du chargement des jeux', error);
       alert(`Impossible de charger les jeux : ${error.message}`);
     }
   }
 
-  function handleSearch() {
-    const query = searchInput.value.trim();
+  async function performNaturalSearch(rawQuery, { silent = false } = {}) {
+    const query = rawQuery.trim();
     if (!query) {
-      queryExtractBox.classList.remove('active');
-      queryExtractBox.innerHTML = '';
-      renderResults(resultsList, emptyState, state.games);
+      state.lastSearch = { query: '', results: [] };
+      updateReadMode('', { results: state.games });
       return;
     }
-    updateReadMode(query);
+
+    try {
+      const endpoint = `/games?question=${encodeURIComponent(query)}`;
+      const data = await callApi(endpoint);
+      const mapped = data.map((item) => mapApiGame(item));
+      state.lastSearch = { query, results: mapped };
+      updateReadMode(query, { results: mapped });
+    } catch (error) {
+      console.error('Erreur lors de la recherche', error);
+      if (!silent) {
+        alert(`Impossible d'exécuter la recherche : ${error.message}`);
+      }
+      if (
+        state.lastSearch.results.length > 0 &&
+        state.lastSearch.query &&
+        state.lastSearch.query === query
+      ) {
+        updateReadMode(state.lastSearch.query, { results: state.lastSearch.results });
+      } else {
+        updateReadMode('', { results: state.games });
+      }
+    }
+  }
+
+  async function handleSearch(event) {
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    await performNaturalSearch(searchInput.value);
   }
 
   async function handleSave(event) {
@@ -639,7 +685,7 @@ export function initApp({
   searchInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      handleSearch();
+      handleSearch(event);
     }
   });
 

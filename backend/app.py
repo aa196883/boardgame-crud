@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any, Mapping, Optional
 
 from flask import Flask, abort, jsonify, request
+
+from .text_to_sql import generate_sql_from_question, is_sql_safe
 from flask_cors import CORS
 
 TABLE_NAME = "jeux"
@@ -114,7 +116,22 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
     @app.get("/games")
     def list_games() -> Any:
         sql_query = request.args.get("sql")
-        if sql_query:
+        question = request.args.get("question")
+
+        if question:
+            try:
+                generated_sql = generate_sql_from_question(question)
+            except Exception as exc:  # pragma: no cover - defensive: API/network errors
+                abort(502, description=f"Failed to generate SQL: {exc}")
+
+            if not generated_sql:
+                abort(400, description="No SQL could be generated from the question.")
+
+            if not is_sql_safe(generated_sql):
+                abort(400, description="Generated SQL failed safety checks.")
+
+            query = generated_sql
+        elif sql_query:
             normalized = sql_query.lstrip().lower()
             if not normalized.startswith("select"):
                 abort(400, description="Only SELECT statements are allowed.")
