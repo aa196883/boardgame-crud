@@ -6,7 +6,7 @@
   <title>Bibliothèque de jeux</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-api-base-url="http://localhost:5000">
 
   <!-- Header / navigation -->
   <header class="app-header">
@@ -103,25 +103,47 @@
 
             <div class="form-field inline-fields">
               <div>
-                <label for="duration" class="field-label">Durée (minutes)</label>
-                <input id="duration" type="number" min="1" class="text-input" />
+                <label for="duration-min" class="field-label">Durée (min)</label>
+                <input id="duration-min" type="number" min="1" class="text-input" />
               </div>
               <div>
-                <label for="type-jeu" class="field-label">Type</label>
-                <select id="type-jeu" class="text-input">
-                  <option value="competitif">Compétitif</option>
-                  <option value="coopératif">Coopératif</option>
-                </select>
+                <label for="duration-max" class="field-label">Durée (max)</label>
+                <input id="duration-max" type="number" min="1" class="text-input" />
               </div>
             </div>
 
             <div class="form-field">
-              <label for="complexite" class="field-label">Complexité</label>
-              <select id="complexite" class="text-input">
-                <option value="facile">Facile</option>
-                <option value="moyen">Moyen</option>
-                <option value="expert">Expert</option>
-              </select>
+              <label for="type-jeu" class="field-label">Type de jeu</label>
+              <input
+                id="type-jeu"
+                type="text"
+                class="text-input"
+                list="type-options"
+                placeholder="ex : Coopératif, Culture générale"
+              />
+              <datalist id="type-options">
+                <option value="Compétitif"></option>
+                <option value="Coopératif"></option>
+                <option value="Culture générale"></option>
+                <option value="Observation"></option>
+                <option value="Communication"></option>
+              </datalist>
+            </div>
+
+            <div class="form-field">
+              <label for="complexite" class="field-label">Jeu en équipe ?</label>
+              <input
+                id="complexite"
+                type="text"
+                class="text-input"
+                list="team-options"
+                placeholder="ex : Oui, Non, Au choix"
+              />
+              <datalist id="team-options">
+                <option value="Oui"></option>
+                <option value="Non"></option>
+                <option value="Au choix"></option>
+              </datalist>
             </div>
 
             <div class="form-field">
@@ -183,6 +205,10 @@
     Données privées – usage interne • v0.1
   </footer>
 
-  <script src="main.js"></script>
+  <script type="module">
+    import { initApp } from './main.js';
+
+    initApp();
+  </script>
 </body>
 </html>
