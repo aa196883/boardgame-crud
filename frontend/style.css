@@ -530,15 +530,18 @@ html, body {
 }
 
 .row-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   text-align: right;
-  white-space: nowrap;
 }
 
 .link-btn {
   background: transparent;
   border: 0;
   padding: 0;
-  margin-right: 0.75rem;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--accent-solid);
