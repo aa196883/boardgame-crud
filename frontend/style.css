@@ -42,15 +42,19 @@ html, body {
 /* ----- LAYOUT ------------------------------------------------------------ */
 
 .app-header {
+  width: 100%;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+
+.app-header-inner {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: stretch;
   justify-content: center;
   padding: var(--layout-page-padding);
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-soft);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
   width: min(100%, var(--layout-max-width));
   margin: 0 auto;
 }
@@ -89,7 +93,7 @@ html, body {
 }
 
 @media (min-width: 768px) {
-  .app-header {
+  .app-header-inner {
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
@@ -130,6 +134,18 @@ html, body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+}
+
+.app-nav .nav-btn {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 599px) {
+  .app-nav .nav-btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
 }
 
 .nav-btn-active,
