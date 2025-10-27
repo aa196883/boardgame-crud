@@ -216,7 +216,7 @@ html, body {
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: var(--radius-btn);
-  padding: 0.7rem 1rem;
+  padding: 0.55rem 1.1rem;
   line-height: 1.2;
   cursor: pointer;
   display: inline-flex;
@@ -224,15 +224,27 @@ html, body {
   justify-content: center;
   box-shadow: 0 12px 24px rgba(0,0,0,0.08);
   white-space: nowrap;
+  width: auto;
+  min-width: fit-content;
+}
+
+.primary-btn + .primary-btn {
+  margin-left: 0.35rem;
+}
+
+.search-row .primary-btn,
+.form-actions .primary-btn {
+  width: max-content;
 }
 
 .search-row .primary-btn {
-  width: 100%;
+  justify-self: start;
 }
 
-@media (min-width: 640px) {
-  .search-row .primary-btn {
-    width: auto;
+@media (max-width: 639px) {
+  .search-row .primary-btn,
+  .form-actions .primary-btn {
+    width: 100%;
   }
 }
 
@@ -303,8 +315,8 @@ html, body {
 
 .search-table thead tr {
   text-align: left;
-  color: var(--text-dim);
-  font-weight: 500;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 .search-table th,
@@ -314,6 +326,15 @@ html, body {
   vertical-align: top;
   line-height: 1.3;
   white-space: nowrap;
+  color: var(--text-main);
+}
+
+.search-table tbody tr:nth-child(odd) td {
+  background: #f7f8fb;
+}
+
+.search-table tbody tr:nth-child(even) td {
+  background: #ffffff;
 }
 
 .search-table tbody tr:hover td {
@@ -466,8 +487,8 @@ html, body {
 
 .game-table thead tr {
   text-align: left;
-  color: var(--text-dim);
-  font-weight: 500;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 .game-table th,
@@ -477,6 +498,15 @@ html, body {
   vertical-align: top;
   line-height: 1.3;
   white-space: nowrap;
+  color: var(--text-main);
+}
+
+.game-table tbody tr:nth-child(odd) td {
+  background: #f7f8fb;
+}
+
+.game-table tbody tr:nth-child(even) td {
+  background: #ffffff;
 }
 
 .game-table tbody tr:hover td {
