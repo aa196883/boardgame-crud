@@ -1,9 +1,11 @@
-const DEFAULT_API_BASE_URL = 'http://localhost:5000';
+const LOCAL_API_BASE_URL = 'http://localhost:5000';
+const DEFAULT_API_BASE_URL = 'https://boardgame-crud-backend.onrender.com';
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 const DB_TABLE_NAME = 'jeux';
 
 const NUMBER_REGEX = /\d+/g;
 
-export { DEFAULT_API_BASE_URL };
+export { DEFAULT_API_BASE_URL, LOCAL_API_BASE_URL };
 
 export function parseTags(value) {
   if (!value) return [];
@@ -186,15 +188,24 @@ export function analyzeQuery(query, games) {
 }
 
 export function resolveApiBaseUrl({ documentRef, globalObject = globalThis } = {}) {
+  const location = globalObject?.location;
+  const hostname = location?.hostname;
+  if (hostname && LOCAL_HOSTNAMES.has(hostname)) {
+    return LOCAL_API_BASE_URL;
+  }
+
   const datasetUrl = documentRef?.body?.dataset?.apiBaseUrl;
   if (datasetUrl) return datasetUrl;
+
   if (globalObject && typeof globalObject.API_BASE_URL === 'string') {
     return globalObject.API_BASE_URL;
   }
-  const origin = globalObject?.location?.origin;
+
+  const origin = location?.origin;
   if (origin && origin !== 'null') {
     return origin;
   }
+
   return DEFAULT_API_BASE_URL;
 }
 
