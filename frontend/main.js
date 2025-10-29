@@ -188,8 +188,10 @@ export function analyzeQuery(query, games) {
 }
 
 export function resolveApiBaseUrl({ documentRef, globalObject = globalThis } = {}) {
+  console.log('Resolving API base URL');
   const location = globalObject?.location;
   const hostname = location?.hostname;
+  console.log('Hostname:', hostname);
   if (hostname && LOCAL_HOSTNAMES.has(hostname)) {
     return LOCAL_API_BASE_URL;
   }
@@ -362,6 +364,7 @@ function buildSearchSql(sortKey, direction = 'asc') {
 
 function createApiCaller(fetchImpl, baseUrl) {
   const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
+  // console.log('API Base URL:', normalizedBaseUrl);
   return async function callApi(path, { method = 'GET', body } = {}) {
     const response = await fetchImpl(`${normalizedBaseUrl}${path}`, {
       method,
@@ -425,8 +428,8 @@ export function initApp({
   if (!fetchImpl) {
     throw new Error('initApp requires a fetch implementation.');
   }
-
   const apiBaseUrl = baseUrl ?? resolveApiBaseUrl({ documentRef, globalObject: globalThis });
+  console.log('Using API Base URL:', apiBaseUrl);
   const callApi = createApiCaller(fetchImpl, apiBaseUrl);
 
   const modeReadPanel = getRequiredElement(documentRef, '#mode-read');
