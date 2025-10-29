@@ -279,4 +279,6 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
 if __name__ == "__main__":
     application = create_app()
-    application.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.getenv("PORT", "5000"))
+    debug_flag = os.getenv("FLASK_DEBUG", "").lower() in {"1", "true", "yes"}
+    application.run(debug=debug_flag, host="0.0.0.0", port=port)
