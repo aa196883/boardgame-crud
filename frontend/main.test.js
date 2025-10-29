@@ -168,25 +168,6 @@ test('resolveApiBaseUrl honours dataset, globals and environment', () => {
     LOCAL_API_BASE_URL,
   );
 
-  assert.equal(
-    resolveApiBaseUrl({
-      documentRef: {
-        body: { dataset: { apiBaseUrl: 'https://remote.example.com' } },
-      },
-      globalObject: {
-        location: { hostname: 'localhost', origin: 'http://localhost:8000' },
-      },
-    }),
-    LOCAL_API_BASE_URL,
-  );
-
-  assert.equal(
-    resolveApiBaseUrl({
-      globalObject: { location: { hostname: 'devbox', port: '8000' } },
-    }),
-    LOCAL_API_BASE_URL,
-  );
-
   assert.equal(resolveApiBaseUrl({ globalObject: {} }), DEFAULT_API_BASE_URL);
 });
 
