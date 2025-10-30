@@ -211,6 +211,18 @@ html, body {
   margin: 0 auto;
 }
 
+.primary-btn.is-loading,
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.search-table.is-loading {
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+
 @keyframes spinner-rotate {
   from {
     transform: rotate(0deg);

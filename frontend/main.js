@@ -474,6 +474,8 @@ export function initApp({
   const saveBtn = getRequiredElement(documentRef, '#save-btn');
   const cancelBtn = getRequiredElement(documentRef, '#cancel-btn');
 
+  const SEARCH_LOADING_MIN_DURATION_MS = 3000;
+
   const state = {
     games: [],
     editingOriginalName: null,
@@ -497,6 +499,46 @@ export function initApp({
     } else {
       searchLoadingIndicator.classList.add('hidden');
     }
+  }
+
+  function clearResultsForLoading() {
+    resultsList.innerHTML = '';
+    const table = resultsList.closest('table');
+    if (table) {
+      table.classList.remove('is-empty');
+      table.classList.add('is-loading');
+    }
+    emptyState.classList.add('hidden');
+  }
+
+  function startSearchLoadingVisual() {
+    clearResultsForLoading();
+    setSearchLoading(true);
+    searchBtn.disabled = true;
+    searchBtn.classList.add('is-loading');
+
+    let finished = false;
+    const minimumDelay = new Promise((resolve) => {
+      setTimeout(resolve, SEARCH_LOADING_MIN_DURATION_MS);
+    });
+
+    return {
+      async finish() {
+        if (finished) {
+          await minimumDelay;
+          return;
+        }
+        finished = true;
+        await minimumDelay;
+        searchBtn.disabled = false;
+        searchBtn.classList.remove('is-loading');
+        setSearchLoading(false);
+        const table = resultsList.closest('table');
+        if (table) {
+          table.classList.remove('is-loading');
+        }
+      },
+    };
   }
 
   function clearSearchFeedback({ matchTypes } = {}) {
@@ -660,58 +702,67 @@ export function initApp({
       updateReadMode('', { results: state.games });
       if (!silent) {
         clearSearchFeedback({ matchTypes: ['query-error'] });
-        setSearchLoading(false);
       }
       return;
     }
 
+    let loadingControl = null;
     if (!silent) {
       clearSearchFeedback({ matchTypes: ['query-error', 'database-error', 'general-error'] });
-      setSearchLoading(true);
+      loadingControl = startSearchLoadingVisual();
     }
 
+    let mappedResults = null;
+    let searchError = null;
     try {
       const endpoint = `/games?question=${encodeURIComponent(query)}`;
       const data = await callApi(endpoint);
-      const mapped = data.map((item) => mapApiGame(item));
-      state.lastSearch = { query, results: mapped };
+      mappedResults = data.map((item) => mapApiGame(item));
+    } catch (error) {
+      console.error('Erreur lors de la recherche', error);
+      searchError = error;
+    }
+
+    if (!silent && loadingControl) {
+      await loadingControl.finish();
+    }
+
+    if (!searchError) {
+      state.lastSearch = { query, results: mappedResults };
       if (!silent) {
         clearSearchFeedback({ matchTypes: ['query-error', 'general-error', 'database-error'] });
       }
-      updateReadMode(query, { results: mapped });
-    } catch (error) {
-      console.error('Erreur lors de la recherche', error);
-      if (!silent) {
-        if (error?.code === 'NETWORK_ERROR') {
-          showSearchFeedback("La base de données n'a pas été trouvée ☹️", {
-            tone: 'error',
-            type: 'database-error',
-          });
-        } else if (error?.status === 400 || error?.status === 502) {
-          showSearchFeedback('Essaye une autre question ☹️', {
-            tone: 'info',
-            type: 'query-error',
-          });
-        } else {
-          showSearchFeedback(`Impossible d'exécuter la recherche : ${error.message}`, {
-            tone: 'error',
-            type: 'general-error',
-          });
-        }
-      }
-      if (
-        state.lastSearch.results.length > 0 &&
-        state.lastSearch.query &&
-        state.lastSearch.query === query
-      ) {
-        updateReadMode(state.lastSearch.query, { results: state.lastSearch.results });
+      updateReadMode(query, { results: mappedResults });
+      return;
+    }
+
+    if (!silent) {
+      if (searchError?.code === 'NETWORK_ERROR') {
+        showSearchFeedback("La base de données n'a pas été trouvée ☹️", {
+          tone: 'error',
+          type: 'database-error',
+        });
+      } else if (searchError?.status === 400 || searchError?.status === 502) {
+        showSearchFeedback('Essaye une autre question ☹️', {
+          tone: 'info',
+          type: 'query-error',
+        });
       } else {
-        updateReadMode('', { results: state.games });
+        showSearchFeedback(`Impossible d'exécuter la recherche : ${searchError.message}`, {
+          tone: 'error',
+          type: 'general-error',
+        });
       }
-    } finally {
-      if (!silent) {
-        setSearchLoading(false);
-      }
+    }
+
+    if (
+      state.lastSearch.results.length > 0 &&
+      state.lastSearch.query &&
+      state.lastSearch.query === query
+    ) {
+      updateReadMode(state.lastSearch.query, { results: state.lastSearch.results });
+    } else {
+      updateReadMode('', { results: state.games });
     }
   }
 
@@ -823,6 +874,7 @@ export function initApp({
   return {
     refreshGames,
     setMode,
+    performSearch: performNaturalSearch,
     getState: () => ({ ...state }),
   };
 }
