@@ -185,6 +185,54 @@ html, body {
   gap: 0.75rem;
 }
 
+.search-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: -0.25rem;
+}
+
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(142, 207, 212, 0.35);
+  border-top-color: var(--accent-solid);
+  animation: spinner-rotate 0.9s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spinner-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.search-feedback {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.search-feedback-info {
+  color: var(--text-dim);
+}
+
+.search-feedback-error {
+  color: var(--danger-text);
+}
+
 .field-label {
   font-size: 0.8rem;
   font-weight: 500;

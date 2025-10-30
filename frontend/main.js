@@ -366,31 +366,43 @@ function createApiCaller(fetchImpl, baseUrl) {
   const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
   // console.log('API Base URL:', normalizedBaseUrl);
   return async function callApi(path, { method = 'GET', body } = {}) {
-    const response = await fetchImpl(`${normalizedBaseUrl}${path}`, {
-      method,
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let response;
+    try {
+      response = await fetchImpl(`${normalizedBaseUrl}${path}`, {
+        method,
+        headers: body ? { 'Content-Type': 'application/json' } : undefined,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (networkError) {
+      const error = new Error('Network request failed');
+      error.code = 'NETWORK_ERROR';
+      error.cause = networkError;
+      throw error;
+    }
 
-    let payload = null;
+    let responsePayload = null;
     if (response.status !== 204) {
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
-        payload = await response.json();
+        responsePayload = await response.json();
       } else {
-        payload = await response.text();
+        responsePayload = await response.text();
       }
     }
 
     if (!response.ok) {
       const errorMessage =
-        typeof payload === 'string'
-          ? payload || `HTTP ${response.status}`
-          : payload?.message || `HTTP ${response.status}`;
-      throw new Error(errorMessage);
+        typeof responsePayload === 'string'
+          ? responsePayload || `HTTP ${response.status}`
+          : responsePayload?.message || `HTTP ${response.status}`;
+      const error = new Error(errorMessage);
+      error.code = 'HTTP_ERROR';
+      error.status = response.status;
+      error.details = responsePayload;
+      throw error;
     }
 
-    return payload;
+    return responsePayload;
   };
 }
 
@@ -441,6 +453,8 @@ export function initApp({
   const resultsList = getRequiredElement(documentRef, '#results-list');
   const emptyState = getRequiredElement(documentRef, '#empty-state');
   const queryExtractBox = getRequiredElement(documentRef, '#query-extract');
+  const searchLoadingIndicator = getRequiredElement(documentRef, '#search-loading');
+  const searchFeedbackBox = getRequiredElement(documentRef, '#search-feedback');
   const sortHeaders = Array.from(
     documentRef.querySelectorAll('.search-table th[data-sort-key]')
   );
@@ -473,6 +487,39 @@ export function initApp({
       results: [],
     },
   };
+
+  let currentFeedbackType = null;
+  const FEEDBACK_TONE_CLASSES = ['search-feedback-info', 'search-feedback-error'];
+
+  function setSearchLoading(isLoading) {
+    if (isLoading) {
+      searchLoadingIndicator.classList.remove('hidden');
+    } else {
+      searchLoadingIndicator.classList.add('hidden');
+    }
+  }
+
+  function clearSearchFeedback({ matchTypes } = {}) {
+    if (Array.isArray(matchTypes) && matchTypes.length > 0) {
+      if (!matchTypes.includes(currentFeedbackType)) {
+        return;
+      }
+    }
+
+    currentFeedbackType = null;
+    searchFeedbackBox.textContent = '';
+    searchFeedbackBox.classList.add('hidden');
+    FEEDBACK_TONE_CLASSES.forEach((cls) => searchFeedbackBox.classList.remove(cls));
+  }
+
+  function showSearchFeedback(message, { tone = 'info', type = null } = {}) {
+    currentFeedbackType = type;
+    searchFeedbackBox.textContent = message;
+    searchFeedbackBox.classList.remove('hidden');
+    FEEDBACK_TONE_CLASSES.forEach((cls) => searchFeedbackBox.classList.remove(cls));
+    const toneClass = tone === 'error' ? 'search-feedback-error' : 'search-feedback-info';
+    searchFeedbackBox.classList.add(toneClass);
+  }
 
   function setMode(mode) {
     if (mode === 'read') {
@@ -582,6 +629,7 @@ export function initApp({
       const data = await callApi(endpoint);
       const mapped = data.map((item) => mapApiGame(item));
       state.games = mapped;
+      clearSearchFeedback({ matchTypes: ['database-error', 'general-error'] });
       renderAdminTable(documentRef, adminTableBody, emptyAdmin, state.games);
       updateSortIndicators();
       if (state.lastSearch.query) {
@@ -591,7 +639,17 @@ export function initApp({
       }
     } catch (error) {
       console.error('Erreur lors du chargement des jeux', error);
-      alert(`Impossible de charger les jeux : ${error.message}`);
+      if (error?.code === 'NETWORK_ERROR') {
+        showSearchFeedback("La base de données n'a pas été trouvée ☹️", {
+          tone: 'error',
+          type: 'database-error',
+        });
+      } else {
+        showSearchFeedback(`Impossible de charger les jeux : ${error.message}`, {
+          tone: 'error',
+          type: 'general-error',
+        });
+      }
     }
   }
 
@@ -600,7 +658,16 @@ export function initApp({
     if (!query) {
       state.lastSearch = { query: '', results: [] };
       updateReadMode('', { results: state.games });
+      if (!silent) {
+        clearSearchFeedback({ matchTypes: ['query-error'] });
+        setSearchLoading(false);
+      }
       return;
+    }
+
+    if (!silent) {
+      clearSearchFeedback({ matchTypes: ['query-error', 'database-error', 'general-error'] });
+      setSearchLoading(true);
     }
 
     try {
@@ -608,11 +675,29 @@ export function initApp({
       const data = await callApi(endpoint);
       const mapped = data.map((item) => mapApiGame(item));
       state.lastSearch = { query, results: mapped };
+      if (!silent) {
+        clearSearchFeedback({ matchTypes: ['query-error', 'general-error', 'database-error'] });
+      }
       updateReadMode(query, { results: mapped });
     } catch (error) {
       console.error('Erreur lors de la recherche', error);
       if (!silent) {
-        alert(`Impossible d'exécuter la recherche : ${error.message}`);
+        if (error?.code === 'NETWORK_ERROR') {
+          showSearchFeedback("La base de données n'a pas été trouvée ☹️", {
+            tone: 'error',
+            type: 'database-error',
+          });
+        } else if (error?.status === 400 || error?.status === 502) {
+          showSearchFeedback('Essaye une autre question ☹️', {
+            tone: 'info',
+            type: 'query-error',
+          });
+        } else {
+          showSearchFeedback(`Impossible d'exécuter la recherche : ${error.message}`, {
+            tone: 'error',
+            type: 'general-error',
+          });
+        }
       }
       if (
         state.lastSearch.results.length > 0 &&
@@ -622,6 +707,10 @@ export function initApp({
         updateReadMode(state.lastSearch.query, { results: state.lastSearch.results });
       } else {
         updateReadMode('', { results: state.games });
+      }
+    } finally {
+      if (!silent) {
+        setSearchLoading(false);
       }
     }
   }
