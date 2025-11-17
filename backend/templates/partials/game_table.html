@@ -1,0 +1,23 @@
+{% if games %}
+<div class="table-wrapper">
+  <table class="game-table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Joueurs</th>
+        <th>Durée</th>
+        <th>Équipe</th>
+        <th>Supports</th>
+        {% if show_actions %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for game in games %}
+        {% include 'partials/game_row.html' %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">Aucun jeu ne correspond à cette recherche.</div>
+{% endif %}

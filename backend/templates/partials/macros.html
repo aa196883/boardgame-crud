@@ -1,0 +1,15 @@
+{% macro range_label(min_value, max_value, suffix='') -%}
+  {%- if min_value is not none and max_value is not none -%}
+    {%- if min_value == max_value -%}
+      {{ min_value }}{{ suffix }}
+    {%- else -%}
+      {{ min_value }} - {{ max_value }}{{ suffix }}
+    {%- endif -%}
+  {%- elif min_value is not none -%}
+    {{ min_value }}+{{ suffix }}
+  {%- elif max_value is not none -%}
+    ≤ {{ max_value }}{{ suffix }}
+  {%- else -%}
+    —
+  {%- endif -%}
+{%- endmacro %}

@@ -1,0 +1,9 @@
+<div id="search-message" hx-swap-oob="innerHTML">
+  {% if source != 'default' %}
+    <div class="alert alert-info">
+      Résultat obtenu via {{ 'la question' if source == 'question' else 'la requête SQL' }}.
+    </div>
+  {% else %}
+    <div></div>
+  {% endif %}
+</div>
