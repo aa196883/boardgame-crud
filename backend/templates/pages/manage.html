@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Édition – Bibliothèque de jeux{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Gestion des jeux</h1>
+  <div class="manage-grid">
+    <div id="form-panel">
+      {% with game=None, view='manage' %}
+        {% include 'partials/game_form.html' %}
+      {% endwith %}
+    </div>
+    <div id="manage-table">
+      {% with games=result.games, show_actions=True %}
+        {% include 'partials/game_table.html' %}
+      {% endwith %}
+    </div>
+  </div>
+</section>
+{% endblock %}

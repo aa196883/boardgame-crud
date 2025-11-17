@@ -1,0 +1,28 @@
+{% from 'partials/macros.html' import range_label %}
+<tr>
+  <td>
+    <strong>{{ game.name }}</strong>
+    <div class="text-muted">{{ game.game_type or '—' }}</div>
+  </td>
+  <td>{{ range_label(game.min_players, game.max_players) }}</td>
+  <td>{{ range_label(game.min_duration_minutes, game.max_duration_minutes, ' min') }}</td>
+  <td>{{ game.team_play or '—' }}</td>
+  <td>{{ game.special_support or '—' }}</td>
+  {% if show_actions %}
+    <td class="row-actions">
+      <button
+        class="secondary"
+        hx-get="{{ url_for('ui.render_game_form') }}?name={{ game.name | urlencode }}&view=manage"
+        hx-target="#form-panel"
+        hx-swap="innerHTML"
+      >Modifier</button>
+      <button
+        class="contrast"
+        hx-delete="{{ url_for('ui.delete_game_html', name=game.name) }}"
+        hx-target="#manage-table"
+        hx-swap="innerHTML"
+        hx-confirm="Supprimer {{ game.name }} ?"
+      >Supprimer</button>
+    </td>
+  {% endif %}
+</tr>

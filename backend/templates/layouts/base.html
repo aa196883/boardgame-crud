@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Bibliothèque de jeux{% endblock %}</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container">
+        <div class="header-brand">
+          <span class="emoji">🎲</span>
+          <div>
+            <p class="brand-title">Bibliothèque de jeux</p>
+            <p class="brand-subtitle">Recherche & gestion</p>
+          </div>
+        </div>
+        <nav class="header-nav">
+          <a href="{{ url_for('ui.index_page') }}" class="nav-link {% if request.path == url_for('ui.index_page') %}active{% endif %}">Recherche</a>
+          <a href="{{ url_for('ui.manage_page') }}" class="nav-link {% if request.path.startswith('/manage') %}active{% endif %}">Édition</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container app-main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+      Données privées – usage interne • v0.2
+    </footer>
+  </body>
+</html>

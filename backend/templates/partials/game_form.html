@@ -1,0 +1,76 @@
+<div class="panel">
+  <h2>{{ 'Modifier' if game and game.name else 'Nouveau jeu' }}</h2>
+  {% if message %}
+    <div class="alert alert-info">{{ message }}</div>
+  {% endif %}
+  <form
+    hx-post="{{ url_for('ui.save_game') }}"
+    hx-target="#form-panel"
+    hx-swap="innerHTML"
+  >
+    <input type="hidden" name="view" value="{{ view or 'manage' }}" />
+    <input type="hidden" name="original_name" value="{{ game.name if game and game.name else '' }}" />
+
+    <label>
+      Nom du jeu
+      <input type="text" name="name" value="{{ game.name if game else '' }}" required />
+    </label>
+
+    <div class="grid">
+      <label>
+        Joueurs (min)
+        <input type="number" name="min_players" min="1" value="{{ game.min_players if game and game.min_players is not none else '' }}" />
+      </label>
+      <label>
+        Joueurs (max)
+        <input type="number" name="max_players" min="1" value="{{ game.max_players if game and game.max_players is not none else '' }}" />
+      </label>
+    </div>
+
+    <div class="grid">
+      <label>
+        Durée min (minutes)
+        <input type="number" name="min_duration_minutes" min="1" value="{{ game.min_duration_minutes if game and game.min_duration_minutes is not none else '' }}" />
+      </label>
+      <label>
+        Durée max (minutes)
+        <input type="number" name="max_duration_minutes" min="1" value="{{ game.max_duration_minutes if game and game.max_duration_minutes is not none else '' }}" />
+      </label>
+    </div>
+
+    <label>
+      Type de jeu
+      <input type="text" name="game_type" value="{{ game.game_type if game else '' }}" placeholder="Coopératif, Quiz, etc." />
+    </label>
+
+    <label>
+      Jeu en équipe ?
+      <input type="text" name="team_play" value="{{ game.team_play if game else '' }}" placeholder="Oui, Non, Au choix" />
+    </label>
+
+    <label>
+      Supports ou tags
+      <input type="text" name="special_support" value="{{ game.special_support if game else '' }}" placeholder="Cartes, Dés..." />
+    </label>
+
+    <label>
+      Accessible à tous ?
+      <select name="everyone_can_play">
+        {% set selection = game.everyone_can_play if game else 'oui' %}
+        <option value="oui" {% if selection == 'oui' %}selected{% endif %}>Oui</option>
+        <option value="non" {% if selection == 'non' %}selected{% endif %}>Non</option>
+      </select>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="primary">Enregistrer</button>
+      <button
+        type="button"
+        class="secondary"
+        hx-get="{{ url_for('ui.render_game_form') }}?view={{ view or 'manage' }}"
+        hx-target="#form-panel"
+        hx-swap="innerHTML"
+      >Nouveau</button>
+    </div>
+  </form>
+</div>

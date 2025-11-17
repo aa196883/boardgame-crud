@@ -1,0 +1,46 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Recherche – Bibliothèque de jeux{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>Recherche intelligente</h1>
+  <p>Décris ton envie en français ou utilise un extrait SQL pour filtrer la base.</p>
+  <form
+    class="search-layout"
+    hx-get="{{ url_for('ui.render_games_table') }}"
+    hx-target="#search-results"
+    hx-indicator="#search-indicator"
+  >
+    <div>
+      <label>Question en français
+        <input type="text" name="question" value="{{ question }}" placeholder="ex: jeux coopératifs de moins de 15 minutes" />
+      </label>
+      <small class="text-muted">L’IA traduit la phrase en SQL. Laisse vide pour tout voir.</small>
+    </div>
+    <div>
+      <label>Requête SQL (optionnel)
+        <textarea name="sql" rows="3" placeholder="SELECT * FROM jeux WHERE joueurs_min &gt;= 4">{{ sql }}</textarea>
+      </label>
+      <input type="hidden" name="view" value="search" />
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="primary">Lancer la recherche</button>
+      <button type="reset" class="secondary" hx-get="{{ url_for('ui.render_games_table') }}" hx-target="#search-results" hx-indicator="#search-indicator">Réinitialiser</button>
+    </div>
+  </form>
+  <div id="search-indicator" class="htmx-indicator">Recherche en cours…</div>
+  <div id="search-message">
+    {% if result.source != 'default' %}
+      <div class="alert alert-info">
+        Résultat obtenu via {{ 'la question' if result.source == 'question' else 'la requête SQL' }}.
+      </div>
+    {% endif %}
+  </div>
+  <div id="search-results">
+    {% with games=result.games, show_actions=False %}
+      {% include 'partials/game_table.html' %}
+    {% endwith %}
+  </div>
+</section>
+{% endblock %}
