@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Bibliothèque de jeux{% endblock %}</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-5QmSoi9/0EyZxWfZHIBNhoX/F1OQzZZQ+Q0jrISFHP8qx9uAr14lH9OpwDa3/qAE" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="app-header-left">
+        <div class="app-title">🎲 Bibliothèque de jeux</div>
+        <div class="app-subtitle">Recherche &amp; gestion</div>
+      </div>
+      <nav class="app-nav">
+        <a class="nav-btn" href="#recherche">Recherche</a>
+        <a class="nav-btn" href="#edition">Édition</a>
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="app-footer">
+    Données privées – usage interne • v0.1
+  </footer>
+</body>
+</html>

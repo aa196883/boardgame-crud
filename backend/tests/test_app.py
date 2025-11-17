@@ -210,3 +210,39 @@ def test_database_schema_constraints(app):
                 f"INSERT INTO {TABLE_NAME} (nom_du_jeu) VALUES (?)",
                 ("Test Game",),
             )
+
+
+def test_homepage_renders(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"Biblioth\xc3\xa8que de jeux" in response.data
+
+
+def test_search_results_partial(client):
+    response = client.get("/ui/search-results")
+    assert response.status_code == 200
+    assert b"Test Game" in response.data
+
+
+def test_ui_form_submission_creates_game(client):
+    response = client.post(
+        "/ui/games",
+        data={
+            "name": "UI Game",
+            "min_players": "2",
+            "max_players": "4",
+            "everyone_can_play": "oui",
+        },
+    )
+    assert response.status_code == 200
+    assert b"UI Game" in response.data
+    assert response.headers.get("HX-Trigger") is not None
+
+    api_response = client.get("/games/UI Game")
+    assert api_response.status_code == 200
+
+
+def test_delete_game_ui_triggers_refresh(client):
+    response = client.delete("/ui/games/Test Game")
+    assert response.status_code == 200
+    assert "games-changed" in (response.headers.get("HX-Trigger") or "")

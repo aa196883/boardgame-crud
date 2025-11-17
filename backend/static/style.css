@@ -134,6 +134,7 @@ html, body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  text-decoration: none;
 }
 
 .app-nav .nav-btn {
@@ -157,14 +158,37 @@ html, body {
   transition: all 0.12s ease;
 }
 
+.sort-btn {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+}
+
+.sort-btn .sort-indicator {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.sort-btn.is-active {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
 /* ----- PANELS ------------------------------------------------------------ */
 
 .panel {
-  display: none;
+  display: block;
+  margin-bottom: 2rem;
 }
 
-.panel.visible {
-  display: block;
+.panel:last-of-type {
+  margin-bottom: 0;
 }
 
 .card {
@@ -401,20 +425,39 @@ html, body {
   display: none !important;
 }
 
+.flash {
+  border-radius: var(--radius-btn);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.85rem;
+}
+
+.flash-success {
+  background: #e4f7ef;
+  border: 1px solid #6fcf97;
+  color: #1d5c39;
+}
+
+.flash-error {
+  background: #fde8e8;
+  border: 1px solid #f29999;
+  color: #8c2d2d;
+}
+
 /* ----- EDIT MODE LAYOUT -------------------------------------------------- */
 
-#mode-edit .edit-layout {
+.edit-layout {
   display: grid;
   gap: 1rem;
 }
 
 @media (min-width: 900px) {
-  #mode-edit .edit-layout {
+  .edit-layout {
     grid-template-columns: minmax(280px, 360px) minmax(480px, 1fr);
   }
 }
 
-#mode-edit .edit-layout > * {
+.edit-layout > * {
   min-width: 0;
 }
 

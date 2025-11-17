@@ -1,0 +1,110 @@
+<div>
+  {% if message %}
+    <div class="flash flash-success">{{ message }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="flash flash-error">{{ error }}</div>
+  {% endif %}
+
+  <h2>{{ 'Modifier : ' ~ game.name if game else 'Nouveau jeu' }}</h2>
+
+  <form
+    hx-post="{{ url_for('submit_game_form') }}"
+    hx-target="#game-form"
+    hx-swap="innerHTML"
+  >
+    <input type="hidden" name="original_name" value="{{ original_name or '' }}" />
+    <input type="hidden" name="everyone_can_play" value="{{ game.everyone_can_play if game else 'oui' }}" />
+
+    <div class="form-field">
+      <label for="game-name" class="field-label">Nom du jeu</label>
+      <input id="game-name" name="name" type="text" class="text-input" required value="{{ game.name if game else '' }}" />
+    </div>
+
+    <div class="form-field inline-fields">
+      <div>
+        <label for="min-players" class="field-label">Joueurs (min)</label>
+        <input id="min-players" name="min_players" type="number" min="1" class="text-input" value="{{ game.min_players if game and game.min_players is not none else '' }}" />
+      </div>
+      <div>
+        <label for="max-players" class="field-label">Joueurs (max)</label>
+        <input id="max-players" name="max_players" type="number" min="1" class="text-input" value="{{ game.max_players if game and game.max_players is not none else '' }}" />
+      </div>
+    </div>
+
+    <div class="form-field inline-fields">
+      <div>
+        <label for="duration-min" class="field-label">Durée (min)</label>
+        <input id="duration-min" name="min_duration_minutes" type="number" min="1" class="text-input" value="{{ game.min_duration_minutes if game and game.min_duration_minutes is not none else '' }}" />
+      </div>
+      <div>
+        <label for="duration-max" class="field-label">Durée (max)</label>
+        <input id="duration-max" name="max_duration_minutes" type="number" min="1" class="text-input" value="{{ game.max_duration_minutes if game and game.max_duration_minutes is not none else '' }}" />
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="type-jeu" class="field-label">Type de jeu</label>
+      <input
+        id="type-jeu"
+        name="game_type"
+        type="text"
+        class="text-input"
+        list="type-options"
+        placeholder="ex : Coopératif, Culture générale"
+        value="{{ game.game_type if game else '' }}"
+      />
+      <datalist id="type-options">
+        <option value="Compétitif"></option>
+        <option value="Coopératif"></option>
+        <option value="Culture générale"></option>
+        <option value="Observation"></option>
+        <option value="Communication"></option>
+      </datalist>
+    </div>
+
+    <div class="form-field">
+      <label for="complexite" class="field-label">Jeu en équipe ?</label>
+      <input
+        id="complexite"
+        name="team_play"
+        type="text"
+        class="text-input"
+        list="team-options"
+        placeholder="ex : Oui, Non, Au choix"
+        value="{{ game.team_play if game else '' }}"
+      />
+      <datalist id="team-options">
+        <option value="Oui"></option>
+        <option value="Non"></option>
+        <option value="Au choix"></option>
+      </datalist>
+    </div>
+
+    <div class="form-field">
+      <label for="tags" class="field-label">Tags</label>
+      <input
+        id="tags"
+        name="special_support"
+        type="text"
+        class="text-input"
+        placeholder="ex : bluff, party game, coopération"
+        value="{{ game.special_support if game else '' }}"
+      />
+      <p class="hint">Sépare les tags par des virgules.</p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="primary-btn">Enregistrer</button>
+      <button
+        type="button"
+        class="ghost-btn"
+        hx-get="{{ url_for('game_form_partial') }}"
+        hx-target="#game-form"
+        hx-swap="innerHTML"
+      >
+        Annuler
+      </button>
+    </div>
+  </form>
+</div>

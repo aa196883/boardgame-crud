@@ -1,0 +1,39 @@
+<section id="recherche" class="panel">
+  <div class="search-card card">
+    <form
+      id="search-form"
+      hx-get="{{ url_for('search_results_partial') }}"
+      hx-target="#search-results"
+      hx-swap="innerHTML"
+    >
+      <label for="natural-query" class="field-label">Recherche intelligente</label>
+      <div class="search-row">
+        <input
+          id="natural-query"
+          name="question"
+          type="text"
+          class="text-input"
+          placeholder="ex : jeux compétitifs de moins de 10 minutes pour 4 joueurs"
+        />
+        <button type="submit" class="primary-btn">Chercher</button>
+      </div>
+      <p class="hint">
+        Tu peux poser la question en français. Exemple :
+        « Je veux un jeu coopératif rapide pour 2 joueurs ».
+      </p>
+    </form>
+  </div>
+
+  <div
+    id="search-results"
+    hx-get="{{ url_for('search_results_partial') }}"
+    hx-trigger="load,games-changed from:body"
+    hx-target="this"
+    hx-swap="innerHTML"
+    hx-include="#search-form"
+  >
+    <div class="results-table card">
+      <div class="empty-state">Chargement…</div>
+    </div>
+  </div>
+</section>

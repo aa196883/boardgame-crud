@@ -1,0 +1,28 @@
+<section id="edition" class="panel">
+  <div class="edit-layout">
+    <div class="edit-form card">
+      <div
+        id="game-form"
+        hx-get="{{ url_for('game_form_partial') }}"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="innerHTML"
+      >
+        <p class="hint">Chargement du formulaire…</p>
+      </div>
+    </div>
+
+    <div class="edit-table card">
+      <h2>Jeux enregistrés</h2>
+      <div
+        id="admin-table"
+        hx-get="{{ url_for('admin_table_partial') }}"
+        hx-trigger="load,games-changed from:body"
+        hx-target="this"
+        hx-swap="innerHTML"
+      >
+        <div class="empty-state">Chargement…</div>
+      </div>
+    </div>
+  </div>
+</section>

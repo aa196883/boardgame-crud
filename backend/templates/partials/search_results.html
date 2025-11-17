@@ -1,0 +1,62 @@
+{% macro sort_button(label, key) -%}
+  {% set is_active = order == key %}
+  {% set next_dir = 'desc' if is_active and direction == 'asc' else 'asc' %}
+  <button
+    type="button"
+    class="sort-btn {{ 'is-active' if is_active }}"
+    hx-get="{{ url_for('search_results_partial') }}"
+    hx-target="#search-results"
+    hx-include="#search-form"
+    hx-swap="innerHTML"
+    hx-vals='{{ {"order": key, "direction": next_dir}|tojson }}'
+  >
+    {{ label }}
+    {% if is_active %}
+      <span class="sort-indicator">{{ '↑' if direction == 'asc' else '↓' }}</span>
+    {% endif %}
+  </button>
+{%- endmacro %}
+
+<div class="results-table card">
+  {% if question %}
+    <p class="hint">Résultats pour « {{ question }} ».</p>
+  {% endif %}
+
+  {% if games %}
+    <div class="table-scroll">
+      <table class="game-table search-table" aria-live="polite">
+        <thead>
+          <tr>
+            <th scope="col">{{ sort_button('Nom', 'name') }}</th>
+            <th scope="col">{{ sort_button('Joueurs', 'players') }}</th>
+            <th scope="col">{{ sort_button('Durée', 'duration') }}</th>
+            <th scope="col">{{ sort_button('Type', 'type') }}</th>
+            <th scope="col">{{ sort_button('Équipe', 'complexite') }}</th>
+            <th scope="col">Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for game in games %}
+            <tr>
+              <td>{{ game.name }}</td>
+              <td>{{ format_players(game) or '—' }}</td>
+              <td>{{ format_duration(game) or '—' }}</td>
+              <td>{{ game.game_type or '—' }}</td>
+              <td>{{ game.team_play or '—' }}</td>
+              <td>
+                {% set tags = format_tags(game.special_support) %}
+                {% if tags %}
+                  {{ tags | join(' ') }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">Aucun jeu trouvé. Essaie une autre recherche 🙂</div>
+  {% endif %}
+</div>
