@@ -2,10 +2,11 @@
 <tr>
   <td>
     <strong>{{ game.name }}</strong>
-    <div class="text-muted">{{ game.game_type or '—' }}</div>
+    <div class="text-muted">{{ game.special_support or '—' }}</div>
   </td>
   <td>{{ range_label(game.min_players, game.max_players) }}</td>
   <td>{{ range_label(game.min_duration_minutes, game.max_duration_minutes, ' min') }}</td>
+  <td>{{ game.game_type or '—' }}</td>
   <td>{{ game.team_play or '—' }}</td>
   <td>{{ game.special_support or '—' }}</td>
   {% if show_actions %}

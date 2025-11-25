@@ -9,24 +9,26 @@
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
   </head>
   <body>
-    <header class="app-header">
-      <div class="container">
-        <div class="header-brand">
-          <span class="emoji">🎲</span>
+    <header class="app-hero">
+      <div class="container hero-inner">
+        <div class="brand-block">
+          <div class="brand-icon">🎲</div>
           <div>
             <p class="brand-title">Bibliothèque de jeux</p>
-            <p class="brand-subtitle">Recherche & gestion</p>
+            <p class="brand-subtitle">Recherche &amp; gestion</p>
           </div>
         </div>
-        <nav class="header-nav">
-          <a href="{{ url_for('ui.index_page') }}" class="nav-link {% if request.path == url_for('ui.index_page') %}active{% endif %}">Recherche</a>
-          <a href="{{ url_for('ui.manage_page') }}" class="nav-link {% if request.path.startswith('/manage') %}active{% endif %}">Édition</a>
+        <nav class="hero-actions">
+          <a href="{{ url_for('ui.index_page') }}" class="chip {% if request.path == url_for('ui.index_page') %}chip-active{% endif %}">Recherche</a>
+          <a href="{{ url_for('ui.manage_page') }}" class="chip {% if request.path.startswith('/manage') %}chip-active{% endif %}">Édition</a>
         </nav>
       </div>
     </header>
 
-    <main class="container app-main">
-      {% block content %}{% endblock %}
+    <main class="app-main">
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
     </main>
 
     <footer class="app-footer">

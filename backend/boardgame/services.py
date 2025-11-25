@@ -17,7 +17,11 @@ from .errors import (
     ValidationError,
 )
 from .models import BoardGame, validate_payload
-from ..text_to_sql import generate_sql_from_question, is_sql_safe
+from .. import app as legacy_app
+from ..text_to_sql import generate_sql_from_question as _default_generate_sql
+from ..text_to_sql import is_sql_safe
+
+generate_sql_from_question = _default_generate_sql
 
 
 @dataclass(slots=True)
@@ -25,6 +29,16 @@ class GameListResult:
     games: list[BoardGame]
     query: str
     source: str
+
+
+def _generate_sql(question: str) -> str:
+    """Allow legacy monkeypatching via ``backend.app.generate_sql_from_question``."""
+
+    generator = generate_sql_from_question
+    legacy_override = getattr(legacy_app, "generate_sql_from_question", None)
+    if generator is _default_generate_sql and legacy_override is not None:
+        generator = legacy_override
+    return generator(question)
 
 
 def list_games(*, question: Optional[str] = None, sql: Optional[str] = None) -> GameListResult:
@@ -35,7 +49,7 @@ def list_games(*, question: Optional[str] = None, sql: Optional[str] = None) -> 
 
     if question:
         try:
-            generated_sql = generate_sql_from_question(question)
+            generated_sql = _generate_sql(question)
         except GameError:
             raise
         except Exception as exc:  # pragma: no cover - defensive network errors

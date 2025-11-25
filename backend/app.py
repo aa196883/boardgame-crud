@@ -5,8 +5,9 @@ from __future__ import annotations
 import os
 
 from .boardgame import BoardGame, TABLE_NAME, create_app
+from .text_to_sql import generate_sql_from_question
 
-__all__ = ["BoardGame", "TABLE_NAME", "create_app"]
+__all__ = ["BoardGame", "TABLE_NAME", "create_app", "generate_sql_from_question"]
 
 
 if __name__ == "__main__":

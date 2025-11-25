@@ -1,5 +1,8 @@
-<div class="panel">
-  <h2>{{ 'Modifier' if game and game.name else 'Nouveau jeu' }}</h2>
+<div class="card form-card">
+  <div class="card-header">
+    <p class="eyebrow">{{ 'Modification' if game and game.name else 'Création' }}</p>
+    <h2>{{ 'Modifier' if game and game.name else 'Nouveau jeu' }}</h2>
+  </div>
   {% if message %}
     <div class="alert alert-info">{{ message }}</div>
   {% endif %}
@@ -13,7 +16,7 @@
 
     <label>
       Nom du jeu
-      <input type="text" name="name" value="{{ game.name if game else '' }}" required />
+      <input type="text" name="name" value="{{ game.name if game else '' }}" placeholder="ex : Time’s Up" required />
     </label>
 
     <div class="grid">
@@ -40,7 +43,7 @@
 
     <label>
       Type de jeu
-      <input type="text" name="game_type" value="{{ game.game_type if game else '' }}" placeholder="Coopératif, Quiz, etc." />
+      <input type="text" name="game_type" value="{{ game.game_type if game else '' }}" placeholder="ex : Coopératif, Culture générale" />
     </label>
 
     <label>
@@ -50,7 +53,7 @@
 
     <label>
       Supports ou tags
-      <input type="text" name="special_support" value="{{ game.special_support if game else '' }}" placeholder="Cartes, Dés..." />
+      <input type="text" name="special_support" value="{{ game.special_support if game else '' }}" placeholder="Cartes, Dés, Mimes..." />
     </label>
 
     <label>
