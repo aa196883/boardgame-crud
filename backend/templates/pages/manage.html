@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Édition – Bibliothèque de jeux{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <p class="eyebrow">Gestion</p>
+      <h1>Ajoute ou corrige les fiches jeux</h1>
+      <p class="lead">Tout se fait côté serveur via htmx : aucune ligne de JS à maintenir.</p>
+    </div>
+  </div>
+  <div class="manage-grid">
+    <div id="form-panel">
+      {% with game=None, view='manage' %}
+        {% include 'partials/game_form.html' %}
+      {% endwith %}
+    </div>
+    <div id="manage-table" class="card">
+      {% with games=result.games, show_actions=True %}
+        {% include 'partials/game_table.html' %}
+      {% endwith %}
+    </div>
+  </div>
+</section>
+{% endblock %}
