@@ -9,13 +9,20 @@ except ModuleNotFoundError:  # pragma: no cover - tests may not have python-dote
 
 try:  # pragma: no cover - import guard for optional dependency
     import openai
+    from openai import OpenAI
 except ModuleNotFoundError:  # pragma: no cover - handled at runtime when used
     openai = None
 
 # Load environment variables from .env file
 load_dotenv()
 if openai is not None:
-    openai.api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY introuvable. Vérifie backend/.env ou tes variables d'environnement."
+        )
+
+    client = OpenAI(api_key=api_key)
 
 def generate_sql_from_question(question: str) -> str:
     if openai is None:
@@ -92,8 +99,8 @@ def generate_sql_from_question(question: str) -> str:
     """
 
     # Call OpenAI
-    completion = openai.chat.completions.create(
-        model="gpt-4o-mini",  # cheap, instruction-following, multilingual
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "Tu es un assistant qui génère du SQL SQLite."},
             {"role": "user", "content": final_prompt},
@@ -218,6 +225,6 @@ if __name__ == "__main__":
     # """
 
     # print(f"Safe SQL is safe: {is_sql_safe(safe_sql)}")
-    # print(f"Unsafe SQL is safe: {is_sql_safe(unsafe_sql)}")
+    # # print(f"Unsafe SQL is safe: {is_sql_safe(unsafe_sql)}")
 
     pass
