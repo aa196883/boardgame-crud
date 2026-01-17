@@ -9,3 +9,6 @@
 - mieux prendre en compte les types (faire une pré-requête)
 - ajouter petit message quand pas de résultat ou pas de requête générée
 - hello heartache font
+- grossir recherche intelligente (beaucoup)
+- grossir le reste un peu
+- changer la police d'écriture du corps de texte
