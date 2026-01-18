@@ -542,7 +542,7 @@ html, body {
   border: 1px solid var(--border-soft);
   background: transparent;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   border-radius: var(--radius-btn);
   padding: 0.7rem 1rem;
@@ -553,6 +553,8 @@ html, body {
   justify-content: center;
   box-shadow: 0 8px 20px rgba(63, 47, 68, 0.05);
   font-family: var(--font-display);
+  white-space: nowrap;
+  width: auto;
 }
 
 .ghost-btn:hover {
