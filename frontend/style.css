@@ -29,7 +29,7 @@
   --shadow-hover: 0 24px 40px rgba(63, 47, 68, 0.12);
   --font-display: "Hello Heartache", "Inter", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
-  --layout-max-width: 1100px;
+  --layout-max-width: 1500px;
   --layout-page-padding: clamp(1rem, 4vw, 2.5rem);
 }
 
@@ -397,10 +397,10 @@ html, body {
 }
 
 .search-table {
-  width: 100%;
+  width: max-content;
   border-collapse: collapse;
   font-size: 0.85rem;
-  min-width: 520px;
+  min-width: 100%;
 }
 
 .search-table thead tr {
