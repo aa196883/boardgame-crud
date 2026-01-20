@@ -1,11 +1,10 @@
 const LOCAL_API_BASE_URL = 'http://localhost:5000';
-const DEFAULT_API_BASE_URL = 'https://boardgame-crud-backend.onrender.com';
 const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 const DB_TABLE_NAME = 'jeux';
 
 const NUMBER_REGEX = /\d+/g;
 
-export { DEFAULT_API_BASE_URL, LOCAL_API_BASE_URL };
+export { LOCAL_API_BASE_URL };
 
 export function parseTags(value) {
   if (!value) return [];
@@ -187,28 +186,15 @@ export function analyzeQuery(query, games) {
   return { extracts, filtered };
 }
 
-export function resolveApiBaseUrl({ documentRef, globalObject = globalThis } = {}) {
+export function resolveApiBaseUrl({ globalObject = globalThis } = {}) {
   console.log('Resolving API base URL');
-  const location = globalObject?.location;
-  const hostname = location?.hostname;
-  console.log('Hostname:', hostname);
+  const hostname = globalObject?.location?.hostname;
   if (hostname && LOCAL_HOSTNAMES.has(hostname)) {
-    return LOCAL_API_BASE_URL;
+    console.log('Using local API base URL for development.');
+    return LOCAL_API_BASE_URL; // local dev (python app.py on 5000)
   }
-
-  const datasetUrl = documentRef?.body?.dataset?.apiBaseUrl;
-  if (datasetUrl) return datasetUrl;
-
-  if (globalObject && typeof globalObject.API_BASE_URL === 'string') {
-    return globalObject.API_BASE_URL;
-  }
-
-  const origin = location?.origin;
-  if (origin && origin !== 'null') {
-    return origin;
-  }
-
-  return DEFAULT_API_BASE_URL;
+  console.log('Using same origin for API base URL.');
+  return ''; // production: same origin, nginx proxies /api
 }
 
 export function buildPayloadFromForm(data) {
@@ -667,7 +653,7 @@ export function initApp({
   async function refreshGames() {
     try {
       const sql = state.searchSort?.sql ?? buildSearchSql('name', 'asc');
-      const endpoint = sql ? `/games?sql=${encodeURIComponent(sql)}` : '/games';
+      const endpoint = sql ? `/api/games?sql=${encodeURIComponent(sql)}` : '/api/games';
       const data = await callApi(endpoint);
       const mapped = data.map((item) => mapApiGame(item));
       state.games = mapped;
@@ -715,7 +701,7 @@ export function initApp({
     let mappedResults = null;
     let searchError = null;
     try {
-      const endpoint = `/games?question=${encodeURIComponent(query)}`;
+      const endpoint = `/api/games?question=${encodeURIComponent(query)}`;
       const data = await callApi(endpoint);
       mappedResults = data.map((item) => mapApiGame(item));
     } catch (error) {
@@ -796,9 +782,9 @@ export function initApp({
     try {
       if (state.editingOriginalName) {
         const encodedName = encodeURIComponent(state.editingOriginalName);
-        await callApi(`/games/${encodedName}`, { method: 'PUT', body: payload });
+        await callApi(`/api/games/${encodedName}`, { method: 'PUT', body: payload });
       } else {
-        await callApi('/games', { method: 'POST', body: payload });
+        await callApi('/api/games', { method: 'POST', body: payload });
       }
       await refreshGames();
       clearForm();
@@ -813,7 +799,7 @@ export function initApp({
     const confirmation = confirm(`Supprimer "${name}" ?`);
     if (!confirmation) return;
     try {
-      await callApi(`/games/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      await callApi(`/api/games/${encodeURIComponent(name)}`, { method: 'DELETE' });
       await refreshGames();
     } catch (error) {
       console.error('Erreur lors de la suppression', error);

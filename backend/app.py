@@ -113,7 +113,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     CORS(app)
 
-    @app.get("/games")
+    @app.get("/api/games")
     def list_games() -> Any:
         sql_query = request.args.get("sql")
         question = request.args.get("question")
@@ -155,7 +155,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
         games = [BoardGame.from_row(row).to_dict() for row in rows]
         return jsonify(games)
 
-    @app.get("/games/<string:name>")
+    @app.get("/api/games/<string:name>")
     def get_game(name: str) -> Any:
         db_file = _get_db_path(app)
         with _connect(db_file) as connection:
@@ -168,7 +168,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
             abort(404, description="Game not found.")
         return jsonify(BoardGame.from_row(row).to_dict())
 
-    @app.post("/games")
+    @app.post("/api/games")
     def create_game() -> Any:
         payload = request.get_json(silent=True)
         if not isinstance(payload, Mapping):
@@ -211,7 +211,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
             abort(409, description="A game with the same name already exists.")
         return jsonify(game.to_dict()), 201
 
-    @app.put("/games/<string:name>")
+    @app.put("/api/games/<string:name>")
     def update_game(name: str) -> Any:
         payload = request.get_json(silent=True)
         if not isinstance(payload, Mapping):
@@ -262,7 +262,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
         return jsonify(updated_game.to_dict())
 
-    @app.delete("/games/<string:name>")
+    @app.delete("/api/games/<string:name>")
     def delete_game(name: str) -> Any:
         db_file = _get_db_path(app)
         with _connect(db_file) as connection:
