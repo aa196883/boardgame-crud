@@ -427,7 +427,6 @@ export function initApp({
     throw new Error('initApp requires a fetch implementation.');
   }
   const apiBaseUrl = baseUrl ?? resolveApiBaseUrl({ documentRef, globalObject: globalThis });
-  console.log('Using API Base URL:', apiBaseUrl);
   const callApi = createApiCaller(fetchImpl, apiBaseUrl);
 
   const modeReadPanel = getRequiredElement(documentRef, '#mode-read');
