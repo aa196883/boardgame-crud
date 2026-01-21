@@ -2,7 +2,7 @@
 - do some advanced testing for natural language inputs
 - add a go back button when when we show results from natural language input
 - make it responsive for mobile
-- pouvoir cliquer sur les classements après une recherche
-- pouvoir classer sur l'écran de modification
-- mieux prendre en compte les types (faire une pré-requête)
-- ajouter petit message quand pas de résultat ou pas de requête générée
+- make table result interactive : user has to be able to click on column header to sort
+- make table edit interactive : user has to be able to click on column header to sort
+- visual update : SQL querry shows up during search with a blinking `_` at the end
+- audio input capability 
