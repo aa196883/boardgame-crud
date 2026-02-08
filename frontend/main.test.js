@@ -371,6 +371,7 @@ function createAppTestHarness() {
   const resultsList = new TestElement({ tagName: 'tbody' });
   resultsTable.appendChild(resultsList);
   documentRef.register('#results-list', resultsList);
+  documentRef.register('#results-cards', new TestElement({ tagName: 'div' }));
 
   const emptyState = documentRef.register(
     '#empty-state',

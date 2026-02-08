@@ -210,9 +210,12 @@ function getRequiredElement(documentRef, selector) {
   return element;
 }
 
-function renderResults(resultsBody, emptyState, games) {
+function renderResults(resultsBody, emptyState, games, resultsCards) {
   const table = resultsBody.closest('table');
   resultsBody.innerHTML = '';
+  if (resultsCards) {
+    resultsCards.innerHTML = '';
+  }
 
   if (!games || games.length === 0) {
     emptyState.classList.remove('hidden');
@@ -239,29 +242,53 @@ function renderResults(resultsBody, emptyState, games) {
       return cell;
     };
 
-    const nameCell = createCell('Nom', game.nom);
+    const tagsLabel = game.tags.length > 0 ? game.tags.map((tag) => `#${tag}`).join(' ') : '—';
 
-    const playersCell = createCell('Joueurs', formatPlayers(game) || '—');
-
-    const durationCell = createCell('Durée', formatDuration(game) || '—');
-
-    const typeCell = createCell('Type', game.type || '—');
-
-    const complexiteCell = createCell('Équipe', game.complexite || '—');
-
-    const tagsCell = createCell(
-      'Tags',
-      game.tags.length > 0 ? game.tags.map((tag) => `#${tag}`).join(' ') : '—'
-    );
-
-    row.appendChild(nameCell);
-    row.appendChild(playersCell);
-    row.appendChild(durationCell);
-    row.appendChild(typeCell);
-    row.appendChild(complexiteCell);
-    row.appendChild(tagsCell);
+    row.appendChild(createCell('Nom', game.nom));
+    row.appendChild(createCell('Joueurs', formatPlayers(game) || '—'));
+    row.appendChild(createCell('Durée', formatDuration(game) || '—'));
+    row.appendChild(createCell('Type', game.type || '—'));
+    row.appendChild(createCell('Équipe', game.complexite || '—'));
+    row.appendChild(createCell('Tags', tagsLabel));
 
     resultsBody.appendChild(row);
+
+    if (resultsCards) {
+      const card = doc.createElement('article');
+      card.className = 'result-card';
+
+      const title = doc.createElement('h3');
+      title.className = 'result-card-title';
+      title.textContent = game.nom || '—';
+      card.appendChild(title);
+
+      const fields = [
+        ['Joueurs', formatPlayers(game) || '—'],
+        ['Durée', formatDuration(game) || '—'],
+        ['Type', game.type || '—'],
+        ['Équipe', game.complexite || '—'],
+        ['Tags', tagsLabel],
+      ];
+
+      fields.forEach(([label, value]) => {
+        const field = doc.createElement('p');
+        field.className = 'result-card-field';
+
+        const fieldLabel = doc.createElement('span');
+        fieldLabel.className = 'result-card-label';
+        fieldLabel.textContent = `${label} : `;
+
+        const fieldValue = doc.createElement('span');
+        fieldValue.className = 'result-card-value';
+        fieldValue.textContent = value;
+
+        field.appendChild(fieldLabel);
+        field.appendChild(fieldValue);
+        card.appendChild(field);
+      });
+
+      resultsCards.appendChild(card);
+    }
   });
 }
 
@@ -412,6 +439,7 @@ export function initApp({
   const searchInput = getRequiredElement(documentRef, '#natural-query');
   const searchBtn = getRequiredElement(documentRef, '#search-btn');
   const resultsList = getRequiredElement(documentRef, '#results-list');
+  const resultsCards = getRequiredElement(documentRef, '#results-cards');
   const emptyState = getRequiredElement(documentRef, '#empty-state');
   const searchLoadingIndicator = getRequiredElement(documentRef, '#search-loading');
   const searchFeedbackBox = getRequiredElement(documentRef, '#search-feedback');
@@ -490,6 +518,7 @@ export function initApp({
 
   function clearResultsForLoading() {
     resultsList.innerHTML = '';
+    resultsCards.innerHTML = '';
     const table = resultsList.closest('table');
     if (table) {
       table.classList.remove('is-empty');
@@ -602,16 +631,16 @@ export function initApp({
     const analysis = analyzeQuery(query, state.games);
 
     if (Array.isArray(results)) {
-      renderResults(resultsList, emptyState, results);
+      renderResults(resultsList, emptyState, results, resultsCards);
       return;
     }
 
     if (!query) {
-      renderResults(resultsList, emptyState, state.games);
+      renderResults(resultsList, emptyState, state.games, resultsCards);
       return;
     }
 
-    renderResults(resultsList, emptyState, analysis.filtered);
+    renderResults(resultsList, emptyState, analysis.filtered, resultsCards);
   }
 
   function updateSortIndicators() {

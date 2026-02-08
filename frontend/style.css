@@ -425,55 +425,12 @@ html, body {
     padding: 0.75rem;
   }
 
-  .search-table,
-  .search-table thead,
-  .search-table tbody,
-  .search-table tr,
-  .search-table th,
-  .search-table td {
+  .results-table .table-scroll {
+    display: none;
+  }
+
+  .results-cards {
     display: block;
-    width: 100%;
-  }
-
-  .search-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .search-table tbody tr {
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-card);
-    margin-bottom: 0.9rem;
-    overflow: hidden;
-    box-shadow: 0 8px 18px rgba(63, 47, 68, 0.08);
-  }
-
-  .search-table tbody td {
-    display: grid;
-    grid-template-columns: minmax(100px, 36%) minmax(0, 1fr);
-    gap: 0.5rem;
-    align-items: start;
-    border-bottom: 1px solid var(--border-soft);
-    padding: 0.75rem 0.9rem;
-  }
-
-  .search-table tbody td:last-child {
-    border-bottom: 0;
-  }
-
-  .search-table tbody td::before {
-    content: attr(data-label);
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    letter-spacing: 0.01em;
   }
 }
 
@@ -486,6 +443,54 @@ html, body {
 }
 
 .search-table tbody tr:hover td {
+  background: rgba(196, 223, 229, 0.35);
+}
+
+
+.results-cards {
+  display: none;
+}
+
+.result-card {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: 0.9rem;
+  box-shadow: 0 8px 18px rgba(63, 47, 68, 0.08);
+  margin-bottom: 0.85rem;
+}
+
+.result-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-family: var(--font-display);
+}
+
+.result-card-field {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.result-card-field + .result-card-field {
+  margin-top: 0.35rem;
+}
+
+.result-card-label {
+  font-family: var(--font-display);
+  color: var(--text-dim);
+}
+
+.search-table tbody tr:nth-child(odd) .result-card,
+.results-cards .result-card:nth-child(odd) {
+  background: rgba(240, 217, 239, 0.25);
+}
+
+.search-table tbody tr:nth-child(even) .result-card,
+.results-cards .result-card:nth-child(even) {
+  background: rgba(252, 220, 225, 0.28);
+}
+
+.results-cards .result-card:hover {
   background: rgba(196, 223, 229, 0.35);
 }
 
