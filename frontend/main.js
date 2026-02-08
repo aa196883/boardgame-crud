@@ -259,24 +259,27 @@ function renderResults(resultsBody, emptyState, games) {
   games.forEach((game) => {
     const row = doc.createElement('tr');
 
-    const nameCell = doc.createElement('td');
-    nameCell.textContent = game.nom;
+    const createCell = (label, value) => {
+      const cell = doc.createElement('td');
+      cell.setAttribute('data-label', label);
+      cell.textContent = value;
+      return cell;
+    };
 
-    const playersCell = doc.createElement('td');
-    playersCell.textContent = formatPlayers(game) || '—';
+    const nameCell = createCell('Nom', game.nom);
 
-    const durationCell = doc.createElement('td');
-    durationCell.textContent = formatDuration(game) || '—';
+    const playersCell = createCell('Joueurs', formatPlayers(game) || '—');
 
-    const typeCell = doc.createElement('td');
-    typeCell.textContent = game.type || '—';
+    const durationCell = createCell('Durée', formatDuration(game) || '—');
 
-    const complexiteCell = doc.createElement('td');
-    complexiteCell.textContent = game.complexite || '—';
+    const typeCell = createCell('Type', game.type || '—');
 
-    const tagsCell = doc.createElement('td');
-    tagsCell.textContent =
-      game.tags.length > 0 ? game.tags.map((tag) => `#${tag}`).join(' ') : '—';
+    const complexiteCell = createCell('Équipe', game.complexite || '—');
+
+    const tagsCell = createCell(
+      'Tags',
+      game.tags.length > 0 ? game.tags.map((tag) => `#${tag}`).join(' ') : '—'
+    );
 
     row.appendChild(nameCell);
     row.appendChild(playersCell);
