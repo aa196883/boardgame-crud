@@ -362,6 +362,10 @@ html, body {
   overflow-x: auto;
 }
 
+.results-cards {
+  display: none;
+}
+
 .search-table {
   width: 100%;
   border-collapse: collapse;
@@ -425,55 +429,59 @@ html, body {
     padding: 0.75rem;
   }
 
-  .search-table,
-  .search-table thead,
-  .search-table tbody,
-  .search-table tr,
-  .search-table th,
-  .search-table td {
-    display: block;
-    width: 100%;
+  .results-table .table-scroll {
+    display: none;
   }
 
-  .search-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .results-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
   }
 
-  .search-table tbody tr {
+  .result-card {
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-card);
-    margin-bottom: 0.9rem;
-    overflow: hidden;
     box-shadow: 0 8px 18px rgba(63, 47, 68, 0.08);
+    padding: 0.9rem;
   }
 
-  .search-table tbody td {
+  .result-card-odd {
+    background: rgba(240, 217, 239, 0.25);
+  }
+
+  .result-card-even {
+    background: rgba(252, 220, 225, 0.28);
+  }
+
+  .result-card-title {
+    font-size: 1.05rem;
+    font-family: var(--font-display);
+    margin-bottom: 0.7rem;
+    color: var(--text-main);
+  }
+
+  .result-card-grid {
+    margin: 0;
     display: grid;
-    grid-template-columns: minmax(100px, 36%) minmax(0, 1fr);
-    gap: 0.5rem;
-    align-items: start;
-    border-bottom: 1px solid var(--border-soft);
-    padding: 0.75rem 0.9rem;
+    grid-template-columns: minmax(82px, 36%) minmax(0, 1fr);
+    row-gap: 0.45rem;
+    column-gap: 0.6rem;
   }
 
-  .search-table tbody td:last-child {
-    border-bottom: 0;
-  }
-
-  .search-table tbody td::before {
-    content: attr(data-label);
+  .result-card-grid dt {
     font-family: var(--font-display);
     font-size: 0.8rem;
     color: var(--text-dim);
-    letter-spacing: 0.01em;
+  }
+
+  .result-card-grid dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+    font-size: 0.9rem;
+    color: var(--text-main);
   }
 }
 

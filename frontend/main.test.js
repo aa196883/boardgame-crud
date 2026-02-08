@@ -364,6 +364,11 @@ function createAppTestHarness() {
   resultsTable.appendChild(resultsList);
   documentRef.register('#results-list', resultsList);
 
+  const resultsCards = documentRef.register(
+    '#results-cards',
+    new TestElement({ tagName: 'div', classNames: ['results-cards'] }),
+  );
+
   const emptyState = documentRef.register(
     '#empty-state',
     new TestElement({ tagName: 'div', classNames: ['empty-state', 'hidden'] }),
@@ -425,6 +430,7 @@ function createAppTestHarness() {
       searchBtn,
       resultsTable,
       resultsList,
+      resultsCards,
       emptyState,
       searchLoading,
       searchFeedback,
@@ -496,6 +502,7 @@ test('performNaturalSearch enforces a visible loading window', async () => {
   // allow the initial refreshGames call to resolve
   await new Promise((resolve) => setTimeout(resolve, 10));
   assert.ok(elements.resultsList.children.length > 0, 'results rendered after initial load');
+  assert.ok(elements.resultsCards.children.length > 0, 'cards rendered after initial load');
 
   const start = Date.now();
   const searchPromise = app.performSearch('nouvelle recherche');
@@ -510,6 +517,7 @@ test('performNaturalSearch enforces a visible loading window', async () => {
     'loading indicator visible',
   );
   assert.equal(elements.resultsList.children.length, 0, 'results table cleared during loading');
+  assert.equal(elements.resultsCards.children.length, 0, 'results cards cleared during loading');
   assert.equal(elements.emptyState.classList.contains('hidden'), true, 'empty state hidden');
   assert.equal(
     elements.resultsTable.classList.contains('is-loading'),
@@ -533,6 +541,7 @@ test('performNaturalSearch enforces a visible loading window', async () => {
     'table loading flag cleared',
   );
   assert.ok(elements.resultsList.children.length > 0, 'results rendered after loading completes');
+  assert.ok(elements.resultsCards.children.length > 0, 'result cards rendered after loading completes');
   assert.ok(
     fetchCalls.some((url) => url.includes('?question=')),
     'search endpoint was invoked',
