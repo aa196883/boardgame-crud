@@ -133,12 +133,11 @@ test('analyzeQuery filters games by keywords and numbers', () => {
     },
   ];
 
-  const { extracts, filtered } = analyzeQuery(
+  const { filtered } = analyzeQuery(
     'jeu compétitif pour 3 joueurs de moins de 20 minutes',
     games,
   );
 
-  assert.deepEqual(extracts.sort(), ['3 joueurs', 'Compétitif', '≤ 20 min'].sort());
   assert.equal(filtered.length, 1);
   assert.equal(filtered[0].nom, 'Comp Game');
 });
@@ -378,7 +377,6 @@ function createAppTestHarness() {
     new TestElement({ tagName: 'div', classNames: ['empty-state', 'hidden'] }),
   );
 
-  const queryExtract = documentRef.register('#query-extract', new TestElement({ tagName: 'div' }));
   const searchLoading = documentRef.register(
     '#search-loading',
     new TestElement({ tagName: 'div', classNames: ['search-loading', 'hidden'] }),
@@ -436,7 +434,6 @@ function createAppTestHarness() {
       resultsTable,
       resultsList,
       emptyState,
-      queryExtract,
       searchLoading,
       searchFeedback,
       adminTableBody,

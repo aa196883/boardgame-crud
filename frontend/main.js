@@ -117,16 +117,9 @@ export function formatPlayers(game) {
 
 export function analyzeQuery(query, games) {
   const normalized = query.trim().toLowerCase();
-  const extracts = [];
-  const pushExtract = (value) => {
-    if (!value) return;
-    if (!extracts.includes(value)) {
-      extracts.push(value);
-    }
-  };
 
   if (!normalized) {
-    return { extracts, filtered: games };
+    return { filtered: games };
   }
 
   let filtered = games;
@@ -135,14 +128,12 @@ export function analyzeQuery(query, games) {
     filtered = filtered.filter((game) =>
       game.type?.toLowerCase().includes('comp')
     );
-    pushExtract('Compétitif');
   }
 
   if (normalized.includes('coop')) {
     filtered = filtered.filter((game) =>
       game.type?.toLowerCase().includes('coop')
     );
-    pushExtract('Coopératif');
   }
 
   const timeMatch = normalized.match(/(\d+)\s*(min|minutes)/);
@@ -157,7 +148,6 @@ export function analyzeQuery(query, games) {
       if (!range) return false;
       return (range.min ?? range.max ?? Infinity) <= maxTime;
     });
-    pushExtract(`≤ ${maxTime} min`);
   }
 
   const playersMatch = normalized.match(/(\d+)\s*jou/);
@@ -180,10 +170,9 @@ export function analyzeQuery(query, games) {
       const max = range.max ?? targetPlayers;
       return targetPlayers >= min && targetPlayers <= max;
     });
-    pushExtract(`${targetPlayers} joueurs`);
   }
 
-  return { extracts, filtered };
+  return { filtered };
 }
 
 export function resolveApiBaseUrl({ globalObject = globalThis } = {}) {
@@ -219,22 +208,6 @@ function getRequiredElement(documentRef, selector) {
     throw new Error(`Missing required element: ${selector}`);
   }
   return element;
-}
-
-function renderExtractChips(container, extracts) {
-  if (!extracts || extracts.length === 0) {
-    container.classList.remove('active');
-    container.innerHTML = '';
-    return;
-  }
-
-  container.classList.add('active');
-  container.innerHTML = `
-    <div class="extract-title">Filtre détecté</div>
-    <ul class="extract-list">
-      ${extracts.map((item) => `<li>${item}</li>`).join('')}
-    </ul>
-  `;
 }
 
 function renderResults(resultsBody, emptyState, games) {
@@ -440,7 +413,6 @@ export function initApp({
   const searchBtn = getRequiredElement(documentRef, '#search-btn');
   const resultsList = getRequiredElement(documentRef, '#results-list');
   const emptyState = getRequiredElement(documentRef, '#empty-state');
-  const queryExtractBox = getRequiredElement(documentRef, '#query-extract');
   const searchLoadingIndicator = getRequiredElement(documentRef, '#search-loading');
   const searchFeedbackBox = getRequiredElement(documentRef, '#search-feedback');
   const sortHeaders = Array.from(
@@ -628,7 +600,6 @@ export function initApp({
 
   function updateReadMode(query, { results } = {}) {
     const analysis = analyzeQuery(query, state.games);
-    renderExtractChips(queryExtractBox, analysis.extracts);
 
     if (Array.isArray(results)) {
       renderResults(resultsList, emptyState, results);
