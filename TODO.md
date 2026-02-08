@@ -5,4 +5,8 @@
 - make table result interactive : user has to be able to click on column header to sort
 - make table edit interactive : user has to be able to click on column header to sort
 - visual update : SQL querry shows up during search with a blinking `_` at the end
-- audio input capability 
+- open ai loading refactoring so it does not crash everything
+- audio input capability    
+- Reduce size in result table
+- change main font : Amasis MY pro light or médium, centaur now text or fangsong, or Kermit light (pref Kermit light)
+- add more padding on columns
