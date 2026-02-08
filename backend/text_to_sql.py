@@ -38,10 +38,10 @@ def generate_sql_from_question(question: str) -> str:
 
     Colonnes de la table `jeux` :
     - nom_du_jeu TEXT : le nom du jeu
-    - temps_de_jeu TEXT : durée lisible, ex "10 - 20 min"
+    - temps_de_jeu TEXT : durée lisible, ex "10 - 20 min" (privilégie les colonnes duree_min_minutes et duree_max_minutes pour les filtres de durée)
     - duree_min_minutes INTEGER : durée minimum en minutes
     - duree_max_minutes INTEGER : durée maximum en minutes
-    - nombre_de_joueurs TEXT : ex "2 à 4"
+    - nombre_de_joueurs TEXT : ex "2 à 4" (privilégie les colonnes joueurs_min et joueurs_max pour les filtres de nombre de joueurs)
     - joueurs_min INTEGER : nombre minimum de joueurs
     - joueurs_max INTEGER : nombre maximum de joueurs
     - en_equipe TEXT : "OUI" si jeu en équipes, "AU CHOIX" si en équipes possibles, "NON" sinon

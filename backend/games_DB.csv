@@ -1,9 +1,9 @@
 ,Temps de jeu,Nombre de joueurs,En équipe ?,"Support particulier
 supplémentaire",Type de jeu,"Tout le monde 
 peut jouer ?"
-1 contre 100,45 min,2 à 6,AU CHOIX,Crayons,"Culture générale ",
+1 contre 100,45 min,2 à 6,,Crayons,Culture générale ,
 2 minutes ensemble,10 - 20 min,2 à 10,NON,∅,Communication,OUI
-2 pommes 3 pains,15 min,2 à 6,NON,∅,"Observation, calculs",Calculs
+2 pommes 3 pains,15 min,2 à 6,,∅,"Observation, calculs",Calculs
 3 trucs pour survivre,15 min,4 à 8,NON,∅,"Réflexion,
 divertissement",OUI
 "365 questions de culture
@@ -21,7 +21,8 @@ de mots",30 min,2 à 8,OUI,∅,Connaissances,OUI
 Apéro-cartes spécial mimes,30 min,2 à 8,OUI,∅,Mimes,OUI
 Articule,15 min,2 à 10,AU CHOIX,∅,Divertissement,Lecture
 Barricades,30 min,2 à 4,NON,∅,Stratégie,OUI
-Citadelles,45 min,2 à 7,NON,∅,Jeu de rôle,Jeu de rôle
+Cabanga,20 min,3 à 6,,"Feuille, crayon","Réflexion, stratégie",
+Citadelles,45 min,2 à 7,NON,∅,Stratégie,Jeu de rôle
 Code Names,20 - 30 min,4 à 8,OUI,∅,Réflexion,Réflexion
 Code Names Disney,20 - 30 min,4 à 8,OUI,∅,"Réflexion,
 culture précise","Réflexion,
@@ -31,28 +32,28 @@ Color addict,10 min,2 à 8,NON,∅,"Observation,
 rapidité",Rapidité
 Color brain,30 min,2 à 20,AU CHOIX,∅,"Culture générale,
 déduction",OUI
-Comédies musicales,1h,4 à 16,OUI,"Feuilles, crayons",Culture précise,Culture précise
+Comédies musicales,1h,4 à 16,,"Feuilles, crayons",Culture précise,Culture précise
 Concept,45 min,4 à 12,OUI,∅,"Culture générale,
 déduction",OUI
 Cranium,30 min,4,OUI,∅,"Culture générale,
 dessins, mimes,
 déduction",OUI
 Défifoo,30 min,4 à 18,OUI,"Feuilles, crayons",Divertissement,OUI
-Dékal,15 min,2 à 6,NON,∅,Stratégie,
+Dékal,15 min,2 à 6,,∅,Stratégie,
 Dés dingues,10 - 15min,2 à 8,NON,∅,"Rapidité,
 observation",OUI
 Dobble Disney,15 min,2 à 8,NON,∅,Rapidité,Culture précise
 Dominos,15 min,2 à 4,NON,∅,Réflexion,OUI
 Esquissé,40 min,4 à 8,NON,∅,Dessin,OUI
-Fairy ring,40 min,2 à 4,NON,∅,Stratégie,
-Fiesta de los muertos,15 min,4 à 8,AU CHOIX,∅,Culture générale,
-Flip 7,20 min,3 à 12,NON,"Feuille, crayon",Hasard,
+Fairy ring,40 min,2 à 4,,∅,Stratégie,
+Fiesta de los muertos,15 min,4 à 8,,∅,Culture générale,
+Flip 7,20 min,3 à 12,,"Feuille, crayon",Hasard,
 "Fort Boyard : la boite
 à énigmes",30 min - 1h,2 à 12,AU CHOIX,∅,Réflexion,Réflexion
 Friends devine la scène,10 min,2 à 6,NON,∅,Culture précise,Culture précise
 Hitster,45 min,2 à 10,AU CHOIX,Application mobile,Culture musicale,OUI
-I know,45 min,2 à 4,AU CHOIX,∅,Culture générale,
-Indix,30 min,2 à 6,AU CHOIX,∅,Culture générale,
+I know,45 min,2 à 4,,∅,Culture générale,
+Indix,30 min,2 à 6,,∅,Culture générale,
 "Jeu du logo et 
 des marques",45 min,2 à 6,NON,∅,Culture précise,OUI
 "Jeu partage avec mes
@@ -60,49 +61,47 @@ petits enfants",15 min,∅,NON,∅,Communication,"Petits-enfants /
 grands-parents"
 "Jeux de cartes, de tarot",,,,,,
 Just one,20 min,3 à 7,NON,∅,Réflexion,OUI
-Know !,"15 min - 1h
-(selon préférence)",3 à 6,NON,"Feuilles, crayons,
+Know !,"15 min - 60 min",3 à 6,NON,"Feuilles, crayons,
 application Android","Culture générale,
 déduction etc.",OUI
 La boite à quiz,30 min,2 - 12 joueurs,NON,∅,"Culture générale,
 réflexion logique...",Réflexion
-La roue de la fortune,,,AU CHOIX,,,
+La roue de la fortune,,,,,,
 Le jeu des régions,20 - 30 min,2 à 10,AU CHOIX,∅,Culture précise,OUI
 Le maillon faible,30 min,4 à 9,NON,∅,Culture générale,OUI
-Le plus proche gagne,30 min,2 à 20,AU CHOIX,∅,"Culture générale ",
+Le plus proche gagne,30 min,2 à 20,,∅,Culture générale ,
 Le premier qui chante...,30 min,2 à 8,NON,∅,Culture musicale,OUI
 Le Rouge et le noir,1h,2 à 6,AU CHOIX,∅,Culture précise,Questions difficiles
-Le trou du cochon,15 min,1 à 6,NON,∅,Chance,
+Le trou du cochon,15 min,1 à 6,,∅,Chance,
 Les 12 coups de midi,30 min,2 à 4,NON,∅,Culture générale,OUI
-Level 8,1h,2 à 6,NON,∅,Stratégie,
+Level 8,1h,2 à 6,,∅,Stratégie,
 Mâche-mots,30 min,4 à 5,OUI,∅,Devinettes,Douleurs buccales
 Mamie moule maki,30 min,2 à 8,NON,∅,Connaissances,OUI
-Maudit mot dit,20 min,3 à 6,NON,∅,Réflexion,
-Memoria bluff,10 - 40 min,2 à 8,NON,"Feuille, crayon",Bluff,
-Mind map,20 min,4 à 14,AU CHOIX,∅,Déduction,
+Maudit mot dit,20 min,3 à 6,,∅,Réflexion,
+Memoria bluff,10 - 40 min,2 à 8,,"Feuille, crayon",Bluff,
+Mind map,20 min,4 à 14,,∅,Déduction,
 Mind up !,20 min,3 à 6,NON,"Feuille, crayon",Réflexion,OUI
-Mot de passe,30 min,3 à 10,AU CHOIX,"Feuille, crayon","Réflexion, rapidité",OUI
-Mot pour mot,20 min,2 à 12,AU CHOIX,∅,"Orthographe,
+Mot de passe,30 min,3 à 10,,"Feuille, crayon","Réflexion, rapidité",OUI
+Mot pour mot,20 min,2 à 12,,∅,"Orthographe,
 rapidité",Orthographe
-Mycélium,15 min,1 à 4,NON,∅,Stratégie,Stratégie
-Nommez-en 5,30 min,2 à 10,AU CHOIX,∅,"Rapidité, culture",
+Mouton mouton,20 min,3 à 9,,∅,Ambiance,
+Mycélium,15 min,1 à 4,,∅,Stratégie,Stratégie
+Nommez-en 5,30 min,2 à 10,,∅,"Rapidité, culture",
 Non merci,20 min,3 à 7,NON,∅,"Réflexion,
 stratégie",Stratégie
-Odin,15 min,2 à 6,NON,"Feuille, crayon","Réflexion, stratégie",
-Outsmarted,30 - 60 min,2 à 24,AU CHOIX,"Téléphone, application",Culture générale,
-"Petits chevaux
-avec cartes",30 - 45 min,2 à 6,NON,∅,Stratégie,OUI
-Phantom ink,15 min,4 à 8,OUI,∅,Réflexion,
+Odin,15 min,2 à 6,,"Feuille, crayon","Réflexion, stratégie",
+Outsmarted,30 - 60 min,2 à 24,,"Téléphone, application",Culture générale,
+Phantom ink,15 min,4 à 8,,∅,Réflexion,
 Pictionary air,30 min,2 à 10,OUI,"Télévision,
 application","Dessin,
 rapidité",OUI
-Pierre feuillé saumon ciseaux,15 min,3 à 6,NON,∅,Mémoire,
-Piña coladice,10 min,2 à 4,NON,∅,Chance,
-Pixies,30 min,2 à 5,NON,Application points,"Réflexion, stratégie",
+Pierre feuillé saumon ciseaux,15 min,3 à 6,,∅,Mémoire,
+Piña coladice,10 min,2 à 4,,∅,Chance,
+Pixies,30 min,2 à 5,,Application points,"Réflexion, stratégie",
 "Plus vite que la
 musique",45 min,2 à 6,AU CHOIX,Lecteur DVD,"Culture musicale,
 rapidité",OUI
-Pyramide,25 min,2 à 4,NON,∅,Culture de la langue,
+Pyramide,25 min,2 à 4,,∅,Culture de la langue,
 Qui a chanté ...,15 min,2 à 6,NON,∅,Culture musicale,OUI
 Quiz des années 70,30 min,2 à 10,AU CHOIX,∅,Culture précise,OUI
 Qwirkle,30 - 60 min,2 à 6,NON,"Feuille, crayon",Réflexion,Réflexion
@@ -116,13 +115,14 @@ Singin' in the game,30 - 45 min,2 à 50,AU CHOIX,∅,Culture musicale,OUI
 Skyjo,30 min,2 à 8,NON,Crayon,Réflexion,OUI
 Slap,30 min,3 à 5,NON,∅,"Culture générale,
 rapidité",OUI
-Splendor,30 min,2 à 4,NON,∅,Stratégie,Stratégie
+Splendor,30 min,2 à 4,,∅,Stratégie,Stratégie
 Soirée explosive,15 min,2 à 10,NON,∅,Divertissement,Questions trash
 Story cubes Harry Potter,20 min,2 à 6,NON,∅,Imagination,Culture précise
-Sur les traces de Marie Curie,20 - 40 min,2 à 4,NON,∅,Réflexion,
-Sur les traces de Darwin,30 min,2 à 5,NON,Crayon,Réflexion,
+Sur les traces de Marie Curie,20 - 40 min,2 à 4,,∅,Réflexion,
+Sur les traces de Darwin,30 min,2 à 5,,Crayon,Réflexion,
 Taboo,30 min,4 à 10,OUI,∅,"Connaissances,
 Rapidité",OUI
+Temple code,30 min,1 à 4,,Crayons,"Réflexion, stratégie",Réflexion
 That's not a hat,15 min,3 à 8,,∅,Mémoire,
 The voice,30 min,2 à 4,NON,Lecteur DVD,"Divertissement,
 musique",OUI
@@ -135,22 +135,24 @@ Top trumps,10 min,2 à 6,NON,∅,Réflexion,OUI
 "Tout le monde veut
 prendre sa place",45 min,2 à 7,NON,∅,Culture générale,OUI
 "Trivial pursuit 
-milénial édition",30 min - 45 min,2 à 6,AU CHOIX,∅," Culture générale",OUI
+milénial édition",30 min - 45 min,2 à 6,AU CHOIX,∅, Culture générale,OUI
 "Trivial pursuit Friends
 (extension)",30 min,2 à 6,AU CHOIX,"∅ ou plateau Trivial
 pursuit",Culture précise,Culture précise
 "Trivial pursuit genius
 (extension)",30 min,2 à 6,AU CHOIX,"∅ ou plateau Trivial
 pursuit",Culture générale,OUI
+Toc,30 min,2 à 6,,∅,Stratégie,OUI
 Trou noir,30 min,2 à 16,AU CHOIX,∅,Culture générale,OUI
 Tu connais la chanson ?,30 min,2 à 10,AU CHOIX,∅,Culture musicale,OUI
-Tu te mets combien ?,45min - 1h,2 à 16,AU CHOIX,Pions,Culture générale,OUI
-Tu te mets combien ? JO,20 min,2 à 16,AU CHOIX,Pions,Culture précise,Culture précise
-Tu te mets combien ? Musique,30 min,2 à 16,AU CHOIX,∅,Culture musicale,
+Tu te mets combien ?,45 min - 60 min,2 à 16,AU CHOIX,Pions,Culture générale,OUI
+Tu te mets combien ? JO,20 min,2 à 16,,Pions,Culture précise,Culture précise
+Tu te mets combien ? Musique,30 min,2 à 16,,∅,Culture musicale,
 "Unlock : les secrets de
 la pieuvre",50 min,2 à 5,NON,Application mobile,Réflexion,Réflexion
 Unlock le réveil de la momie,50 min,2 à 5,NON,Application mobile,Réflexion,Réflexion
 Uno flip,30 min,2 à 10,NON,"Feuille, crayon",Réflexion,OUI
 What do you meme ?,30 min,3 à 5,NON,∅,Divertissement,Génération
-Yam's,20 min,2 à 6,NON,Crayon,Chance,Yam's
-Zéro à cent,25 min,2 à 12,AU CHOIX,∅,Culture générale,OUI
+Yam's,20 min,2 à 6,,Crayon,Chance,Yam's
+Zéro à cent,25 min,2 à 12,,∅,Culture générale,OUI
+Zik,20 min,3 à 6,,∅,Culture musicale,
