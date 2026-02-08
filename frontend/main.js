@@ -473,10 +473,37 @@ export function initApp({
       query: '',
       results: [],
     },
+    isNaturalSearchAvailable: true,
   };
 
   let currentFeedbackType = null;
   const FEEDBACK_TONE_CLASSES = ['search-feedback-info', 'search-feedback-error'];
+
+  function setNaturalSearchAvailability(isAvailable) {
+    state.isNaturalSearchAvailable = Boolean(isAvailable);
+    searchBtn.disabled = !state.isNaturalSearchAvailable;
+
+    if (!state.isNaturalSearchAvailable) {
+      showSearchFeedback(
+        "La recherche en langage naturel n'est pas disponible (clé OpenAI manquante).",
+        { tone: 'info', type: 'openai-disabled' },
+      );
+      return;
+    }
+
+    clearSearchFeedback({ matchTypes: ['openai-disabled'] });
+  }
+
+  async function refreshRuntimeConfig() {
+    try {
+      const config = await callApi('/api/config');
+      if (typeof config?.openai_enabled === 'boolean') {
+        setNaturalSearchAvailability(config.openai_enabled);
+      }
+    } catch (error) {
+      console.warn('Impossible de charger la configuration runtime', error);
+    }
+  }
 
   function setSearchLoading(isLoading) {
     if (isLoading) {
@@ -681,6 +708,10 @@ export function initApp({
   }
 
   async function performNaturalSearch(rawQuery, { silent = false } = {}) {
+    if (!state.isNaturalSearchAvailable) {
+      return;
+    }
+
     const query = rawQuery.trim();
     if (!query) {
       state.lastSearch = { query: '', results: [] };
@@ -854,6 +885,7 @@ export function initApp({
 
   setMode('read');
   updateSortIndicators();
+  refreshRuntimeConfig();
   refreshGames();
 
   return {

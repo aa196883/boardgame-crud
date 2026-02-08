@@ -549,3 +549,37 @@ test('performNaturalSearch enforces a visible loading window', async () => {
     'search endpoint was invoked',
   );
 });
+
+
+test('initApp disables natural search button when OpenAI key is unavailable', async () => {
+  const harness = createAppTestHarness();
+  const { documentRef, elements } = harness;
+
+  const fetchImpl = async (url) => {
+    if (url.endsWith('/api/config')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ openai_enabled: false }),
+      };
+    }
+
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => [],
+    };
+  };
+
+  initApp({ documentRef, fetchImpl, baseUrl: '' });
+  await new Promise((resolve) => setTimeout(resolve, 10));
+
+  assert.equal(elements.searchBtn.disabled, true, 'search button is disabled');
+  assert.equal(elements.searchFeedback.classList.contains('hidden'), false, 'feedback is visible');
+  assert.ok(
+    elements.searchFeedback.textContent.includes('clé OpenAI manquante'),
+    'feedback mentions missing OpenAI key',
+  );
+});
