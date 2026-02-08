@@ -5,7 +5,6 @@ import {
   analyzeQuery,
   buildPayloadFromForm,
   derivePlayTimeString,
-  DEFAULT_API_BASE_URL,
   initApp,
   formatDuration,
   formatPlayers,
@@ -142,23 +141,7 @@ test('analyzeQuery filters games by keywords and numbers', () => {
   assert.equal(filtered[0].nom, 'Comp Game');
 });
 
-test('resolveApiBaseUrl honours dataset, globals and environment', () => {
-  const documentStub = {
-    body: { dataset: { apiBaseUrl: 'https://custom-api.example.com' } },
-  };
-  const globalStub = {
-    location: { origin: 'https://example.com', hostname: 'example.com' },
-  };
-  assert.equal(
-    resolveApiBaseUrl({ documentRef: documentStub, globalObject: globalStub }),
-    'https://custom-api.example.com',
-  );
-
-  assert.equal(
-    resolveApiBaseUrl({ documentRef: { body: { dataset: {} } }, globalObject: globalStub }),
-    'https://example.com',
-  );
-
+test('resolveApiBaseUrl chooses local host override and defaults to same origin', () => {
   assert.equal(
     resolveApiBaseUrl({
       globalObject: {
@@ -168,7 +151,16 @@ test('resolveApiBaseUrl honours dataset, globals and environment', () => {
     LOCAL_API_BASE_URL,
   );
 
-  assert.equal(resolveApiBaseUrl({ globalObject: {} }), DEFAULT_API_BASE_URL);
+  assert.equal(
+    resolveApiBaseUrl({
+      globalObject: {
+        location: { hostname: 'example.com', origin: 'https://example.com' },
+      },
+    }),
+    '',
+  );
+
+  assert.equal(resolveApiBaseUrl({ globalObject: {} }), '');
 });
 
 test('toOptionalNumber converts valid values', () => {
