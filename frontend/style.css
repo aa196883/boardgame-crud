@@ -351,41 +351,6 @@ html, body {
   color: var(--text-dim);
 }
 
-/* Query extract chip box */
-.query-extract {
-  display: none;
-}
-
-.query-extract.active {
-  display: block;
-}
-
-.extract-title {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.extract-list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.extract-list li {
-  background: var(--accent-bg);
-  border: 1px solid var(--accent-solid);
-  border-radius: 999px;
-  color: var(--accent-text);
-  font-size: 0.78rem;
-  line-height: 1.2;
-  padding: 0.45rem 0.7rem;
-  box-shadow: 0 8px 20px rgba(63, 47, 68, 0.08);
-  font-weight: 600;
-}
-
 /* ----- RESULTS TABLE (mode read) ---------------------------------------- */
 
 .results-table {
