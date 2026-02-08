@@ -8,7 +8,10 @@ from typing import Any, Mapping, Optional
 
 from flask import Flask, abort, jsonify, request
 
-from text_to_sql import generate_sql_from_question, is_sql_safe
+try:
+    from .text_to_sql import generate_sql_from_question, is_openai_available, is_sql_safe
+except ImportError:  # pragma: no cover - allows running app.py directly
+    from text_to_sql import generate_sql_from_question, is_openai_available, is_sql_safe
 from flask_cors import CORS
 
 TABLE_NAME = "jeux"
@@ -112,6 +115,11 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
     app.config["JSON_SORT_KEYS"] = False
 
     CORS(app)
+
+
+    @app.get("/api/config")
+    def get_runtime_config() -> Any:
+        return jsonify({"openai_enabled": is_openai_available()})
 
     @app.get("/api/games")
     def list_games() -> Any:

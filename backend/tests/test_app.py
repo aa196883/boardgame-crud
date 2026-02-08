@@ -210,3 +210,10 @@ def test_database_schema_constraints(app):
                 f"INSERT INTO {TABLE_NAME} (nom_du_jeu) VALUES (?)",
                 ("Test Game",),
             )
+
+
+def test_runtime_config_exposes_openai_availability(client):
+    response = client.get("/api/config")
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert isinstance(payload.get("openai_enabled"), bool)

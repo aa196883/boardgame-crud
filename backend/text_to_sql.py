@@ -15,18 +15,22 @@ except ModuleNotFoundError:  # pragma: no cover - handled at runtime when used
 
 # Load environment variables from .env file
 load_dotenv()
-if openai is not None:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError(
-            "OPENAI_API_KEY introuvable. Vérifie backend/.env ou tes variables d'environnement."
-        )
+api_key = os.getenv("OPENAI_API_KEY")
 
-    client = OpenAI(api_key=api_key)
+
+def is_openai_available() -> bool:
+    return openai is not None and bool(api_key)
+
+
+client = OpenAI(api_key=api_key) if is_openai_available() else None
 
 def generate_sql_from_question(question: str) -> str:
     if openai is None:
         raise RuntimeError("OpenAI client is not available. Install openai to enable text-to-SQL.")
+    if not api_key or client is None:
+        raise RuntimeError(
+            "OPENAI_API_KEY introuvable. Vérifie backend/.env ou tes variables d'environnement."
+        )
     # 1. Define schema description
     schema_description = """
     Tu es un assistant SQL. Tu écris uniquement du SQL SQLite.
