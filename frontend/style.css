@@ -1,7 +1,7 @@
 /* ----- RESET / BASE ------------------------------------------------------ */
 
 @import url('https://fonts.cdnfonts.com/css/hello-heartache');
-@import url('https://fonts.cdnfonts.com/css/kermit');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -28,8 +28,8 @@
   --radius-btn: 10px;
   --shadow-card: 0 16px 32px rgba(63, 47, 68, 0.08);
   --shadow-hover: 0 24px 40px rgba(63, 47, 68, 0.12);
-  --font-display: "Hello Heartache", "Inter", system-ui, sans-serif;
-  --font-body: "Kermit Light", "Kermit", "Inter", system-ui, sans-serif;
+  --font-display: "Hello Heartache", "Kermit", system-ui, sans-serif;
+  --font-body: "Satisfy", "Inter", system-ui, sans-serif;
   --layout-max-width: 1500px;
   --layout-page-padding: clamp(1rem, 4vw, 2.5rem);
 }
