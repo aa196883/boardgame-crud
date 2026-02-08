@@ -362,6 +362,10 @@ html, body {
   overflow-x: auto;
 }
 
+.results-cards {
+  display: none;
+}
+
 .result-card-title {
   font-size: 1.05rem;
   font-family: var(--font-display);
