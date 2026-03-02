@@ -19,6 +19,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 
 def is_openai_available() -> bool:
+    print(f"OpenAI module: {'available' if (openai is not None and bool(api_key)) else 'not available'}")
     return openai is not None and bool(api_key)
 
 
@@ -65,7 +66,7 @@ def generate_sql_from_question(question: str) -> str:
     # 2. Add examples (few-shot prompting)
     examples = """
     Exemple 1 :
-    Question : "je veux tous les jeux coopératifs pour 2 joueurs"
+    Question : "je veux tous les jeux coopératifs pour environ 2 joueurs"
     Réponse :
     SELECT *
     FROM jeux
@@ -89,6 +90,14 @@ def generate_sql_from_question(question: str) -> str:
     SELECT *
     FROM jeux
     WHERE nom_du_jeu = 'Citadelles'
+    ORDER BY nom_du_jeu
+
+    Exemple 4 :
+    Question : "je veux les jeux pour exactement 4 joueurs et qui ne sont pas en équipes"
+    Réponse :
+    SELECT *
+    FROM jeux
+    WHERE joueurs_min = 4 AND joueurs_max = 4 AND en_equipe = 'NON'
     ORDER BY nom_du_jeu
     """
 
