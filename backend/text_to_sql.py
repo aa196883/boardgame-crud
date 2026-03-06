@@ -19,7 +19,6 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 
 def is_openai_available() -> bool:
-    print(f"OpenAI module: {'available' if (openai is not None and bool(api_key)) else 'not available'}")
     return openai is not None and bool(api_key)
 
 
