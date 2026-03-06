@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   analyzeQuery,
+  appendDatabaseParam,
   buildPayloadFromForm,
   derivePlayTimeString,
   initApp,
@@ -76,6 +77,16 @@ test('derivePlayTimeString builds label from numbers', () => {
   assert.equal(derivePlayTimeString(10, 20), '10 - 20 min');
   assert.equal(derivePlayTimeString(10, null), '10 min');
   assert.equal(derivePlayTimeString(null, null), null);
+});
+
+
+test('appendDatabaseParam adds selected database query parameter', () => {
+  assert.equal(appendDatabaseParam('/api/games', 'games.db'), '/api/games?db=games.db');
+  assert.equal(
+    appendDatabaseParam('/api/games?sql=SELECT%20*%20FROM%20jeux', 'games_v2.db'),
+    '/api/games?sql=SELECT%20*%20FROM%20jeux&db=games_v2.db',
+  );
+  assert.equal(appendDatabaseParam('/api/games', ''), '/api/games');
 });
 
 test('buildPayloadFromForm prepares backend payload', () => {
@@ -554,7 +565,7 @@ test('initApp disables natural search button when OpenAI key is unavailable', as
   const { documentRef, elements } = harness;
 
   const fetchImpl = async (url) => {
-    if (url.endsWith('/api/config')) {
+    if (url.includes('/api/config')) {
       return {
         ok: true,
         status: 200,

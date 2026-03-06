@@ -106,6 +106,34 @@ def _get_db_path(app: Flask) -> Path:
     return Path(app.config["GAMES_DB_PATH"])
 
 
+def _resolve_db_path(app: Flask, requested_db: Optional[str]) -> Path:
+    if not requested_db:
+        return _get_db_path(app)
+
+    if requested_db != Path(requested_db).name:
+        abort(400, description="Invalid database name.")
+
+    if not requested_db.endswith('.db'):
+        abort(400, description="Database name must end with '.db'.")
+
+    db_directory = Path(app.config["GAMES_DB_DIR"])
+    resolved_path = (db_directory / requested_db).resolve()
+
+    try:
+        resolved_path.relative_to(db_directory.resolve())
+    except ValueError:
+        abort(400, description="Invalid database path.")
+
+    if not resolved_path.exists():
+        abort(404, description=f"Database '{requested_db}' not found.")
+
+    return resolved_path
+
+
+def _get_request_db_path(app: Flask) -> Path:
+    return _resolve_db_path(app, request.args.get("db"))
+
+
 def create_app(db_path: Optional[Path | str] = None) -> Flask:
     """Application factory for the board-game CRUD API."""
 
@@ -115,6 +143,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     app = Flask(__name__)
     app.config["GAMES_DB_PATH"] = str(db_path)
+    app.config["GAMES_DB_DIR"] = str(db_path.parent.resolve())
     app.config["JSON_SORT_KEYS"] = False
 
     CORS(app)
@@ -155,7 +184,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
                 "ORDER BY nom_du_jeu COLLATE NOCASE"
             )
 
-        db_file = _get_db_path(app)
+        db_file = _get_request_db_path(app)
         try:
             with _connect(db_file) as connection:
                 cursor = connection.execute(query)
@@ -168,7 +197,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     @app.get("/api/games/<string:name>")
     def get_game(name: str) -> Any:
-        db_file = _get_db_path(app)
+        db_file = _get_request_db_path(app)
         with _connect(db_file) as connection:
             cursor = connection.execute(
                 f"SELECT * FROM {TABLE_NAME} WHERE nom_du_jeu = ?",
@@ -185,7 +214,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
         if not isinstance(payload, Mapping):
             abort(400, description="A JSON body is required.")
         game = _validate_payload(payload)
-        db_file = _get_db_path(app)
+        db_file = _get_request_db_path(app)
         try:
             with _connect(db_file) as connection:
                 connection.execute(
@@ -228,7 +257,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
         if not isinstance(payload, Mapping):
             abort(400, description="A JSON body is required.")
 
-        db_file = _get_db_path(app)
+        db_file = _get_request_db_path(app)
         with _connect(db_file) as connection:
             cursor = connection.execute(
                 f"SELECT * FROM {TABLE_NAME} WHERE nom_du_jeu = ?",
@@ -275,7 +304,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     @app.delete("/api/games/<string:name>")
     def delete_game(name: str) -> Any:
-        db_file = _get_db_path(app)
+        db_file = _get_request_db_path(app)
         with _connect(db_file) as connection:
             cursor = connection.execute(
                 f"DELETE FROM {TABLE_NAME} WHERE nom_du_jeu = ?",

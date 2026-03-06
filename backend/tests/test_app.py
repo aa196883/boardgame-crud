@@ -88,7 +88,7 @@ def app(tmp_path: Path):
 
 
 def test_list_games(client):
-    response = client.get("/games")
+    response = client.get("/api/games")
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, list)
@@ -97,7 +97,7 @@ def test_list_games(client):
 
 def test_list_games_accepts_sql_query(client):
     response = client.get(
-        "/games",
+        "/api/games",
         query_string={
             "sql": "SELECT * FROM jeux ORDER BY joueurs_min DESC, nom_du_jeu",
         },
@@ -109,7 +109,7 @@ def test_list_games_accepts_sql_query(client):
 
 
 def test_rejects_non_select_statements(client):
-    response = client.get("/games", query_string={"sql": "DELETE FROM jeux"})
+    response = client.get("/api/games", query_string={"sql": "DELETE FROM jeux"})
     assert response.status_code == 400
 
 
@@ -122,7 +122,7 @@ def test_natural_language_question(client, monkeypatch):
 
     monkeypatch.setattr("backend.app.generate_sql_from_question", fake_generate)
 
-    response = client.get("/games", query_string={"question": "liste des jeux"})
+    response = client.get("/api/games", query_string={"question": "liste des jeux"})
 
     assert response.status_code == 200
     assert captured["question"] == "liste des jeux"
@@ -137,7 +137,7 @@ def test_natural_language_rejects_unsafe_sql(client, monkeypatch):
 
     monkeypatch.setattr("backend.app.generate_sql_from_question", fake_generate)
 
-    response = client.get("/games", query_string={"question": "supprimer"})
+    response = client.get("/api/games", query_string={"question": "supprimer"})
 
     assert response.status_code == 400
 
@@ -148,7 +148,7 @@ def client(app):
 
 
 def test_get_single_game(client):
-    response = client.get("/games/Test Game")
+    response = client.get("/api/games/Test Game")
     assert response.status_code == 200
     payload = response.get_json()
     assert payload["min_players"] == 2
@@ -161,17 +161,17 @@ def test_create_game(client):
         "max_players": 5,
         "everyone_can_play": "non",
     }
-    response = client.post("/games", json=payload)
+    response = client.post("/api/games", json=payload)
     assert response.status_code == 201
     body = response.get_json()
     assert body["name"] == "New Game"
 
-    get_response = client.get("/games/New Game")
+    get_response = client.get("/api/games/New Game")
     assert get_response.status_code == 200
 
 
 def test_update_game(client):
-    response = client.put("/games/Test Game", json={"min_players": 3})
+    response = client.put("/api/games/Test Game", json={"min_players": 3})
     assert response.status_code == 200
     updated = response.get_json()
     assert updated["min_players"] == 3
@@ -179,14 +179,14 @@ def test_update_game(client):
 
 
 def test_delete_game(client):
-    response = client.delete("/games/Test Game")
+    response = client.delete("/api/games/Test Game")
     assert response.status_code == 204
-    follow_up = client.get("/games/Test Game")
+    follow_up = client.get("/api/games/Test Game")
     assert follow_up.status_code == 404
 
 
 def test_cors_headers(client):
-    response = client.get("/games")
+    response = client.get("/api/games")
     assert response.headers.get("Access-Control-Allow-Origin") == "*"
 
 
@@ -211,6 +211,49 @@ def test_database_schema_constraints(app):
                 ("Test Game",),
             )
 
+
+
+def test_list_games_from_selected_database(client, app):
+    alternate_db_path = Path(app.config["GAMES_DB_DIR"]) / "alternate.db"
+    with sqlite3.connect(alternate_db_path) as connection:
+        connection.execute(CREATE_TABLE_SQL)
+        game = BoardGame(name="Alternate Game")
+        connection.execute(
+            f"""
+            INSERT INTO {TABLE_NAME} (
+                nom_du_jeu,
+                temps_de_jeu,
+                duree_min_minutes,
+                duree_max_minutes,
+                nombre_de_joueurs,
+                joueurs_min,
+                joueurs_max,
+                en_equipe,
+                support_particulier,
+                type_de_jeu,
+                tout_le_monde_peut_jouer
+            ) VALUES (
+                :nom_du_jeu,
+                :temps_de_jeu,
+                :duree_min_minutes,
+                :duree_max_minutes,
+                :nombre_de_joueurs,
+                :joueurs_min,
+                :joueurs_max,
+                :en_equipe,
+                :support_particulier,
+                :type_de_jeu,
+                :tout_le_monde_peut_jouer
+            )
+            """,
+            game.to_db_params(),
+        )
+
+    response = client.get('/api/games', query_string={'db': 'alternate.db'})
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload[0]["name"] == "Alternate Game"
 
 def test_runtime_config_exposes_openai_availability(client):
     response = client.get("/api/config")

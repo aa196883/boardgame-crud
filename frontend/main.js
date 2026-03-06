@@ -1,6 +1,7 @@
 const LOCAL_API_BASE_URL = 'http://localhost:5000';
 const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 const DB_TABLE_NAME = 'jeux';
+const SELECTED_DATABASE = 'games.db';
 
 const NUMBER_REGEX = /\d+/g;
 
@@ -186,6 +187,13 @@ export function resolveApiBaseUrl({ globalObject = globalThis } = {}) {
   return ''; // production: same origin, nginx proxies /api
 }
 
+export function appendDatabaseParam(path, databaseName = SELECTED_DATABASE) {
+  if (!databaseName) return path;
+  const hasQuery = path.includes('?');
+  const separator = hasQuery ? '&' : '?';
+  return `${path}${separator}db=${encodeURIComponent(databaseName)}`;
+}
+
 export function buildPayloadFromForm(data) {
   return {
     name: data.nom,
@@ -353,13 +361,14 @@ function buildSearchSql(sortKey, direction = 'asc') {
   }
 }
 
-function createApiCaller(fetchImpl, baseUrl) {
+function createApiCaller(fetchImpl, baseUrl, databaseName = SELECTED_DATABASE) {
   const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
   // console.log('API Base URL:', normalizedBaseUrl);
   return async function callApi(path, { method = 'GET', body } = {}) {
     let response;
     try {
-      response = await fetchImpl(`${normalizedBaseUrl}${path}`, {
+      const apiPath = appendDatabaseParam(path, databaseName);
+      response = await fetchImpl(`${normalizedBaseUrl}${apiPath}`, {
         method,
         headers: body ? { 'Content-Type': 'application/json' } : undefined,
         body: body ? JSON.stringify(body) : undefined,
