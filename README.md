@@ -59,6 +59,7 @@ The backend uses a language model to translate these sentences into valid SQL qu
 - Emphasis on simplicity and readability  
 - Table view for quick browsing of results  
 - Works on both desktop and mobile browsers  
+- Lets users pick which SQLite database to query directly from the UI (forwarded as `db` through the API)  
 - Intuitive forms for adding or updating entries  
 
 ---

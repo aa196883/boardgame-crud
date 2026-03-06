@@ -353,13 +353,19 @@ function buildSearchSql(sortKey, direction = 'asc') {
   }
 }
 
-function createApiCaller(fetchImpl, baseUrl) {
+function createApiCaller(fetchImpl, baseUrl, getDatabaseName) {
   const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
   // console.log('API Base URL:', normalizedBaseUrl);
   return async function callApi(path, { method = 'GET', body } = {}) {
+    const databaseName = typeof getDatabaseName === 'function' ? getDatabaseName() : null;
+    const apiUrl = new URL(`${normalizedBaseUrl}${path}`, 'http://localhost');
+    if (databaseName) {
+      apiUrl.searchParams.set('db', databaseName);
+    }
+
     let response;
     try {
-      response = await fetchImpl(`${normalizedBaseUrl}${path}`, {
+      response = await fetchImpl(`${normalizedBaseUrl}${apiUrl.pathname}${apiUrl.search}`, {
         method,
         headers: body ? { 'Content-Type': 'application/json' } : undefined,
         body: body ? JSON.stringify(body) : undefined,
@@ -432,7 +438,6 @@ export function initApp({
     throw new Error('initApp requires a fetch implementation.');
   }
   const apiBaseUrl = baseUrl ?? resolveApiBaseUrl({ documentRef, globalObject: globalThis });
-  const callApi = createApiCaller(fetchImpl, apiBaseUrl);
 
   const modeReadPanel = getRequiredElement(documentRef, '#mode-read');
   const modeEditPanel = getRequiredElement(documentRef, '#mode-edit');
@@ -445,6 +450,7 @@ export function initApp({
   const emptyState = getRequiredElement(documentRef, '#empty-state');
   const searchLoadingIndicator = getRequiredElement(documentRef, '#search-loading');
   const searchFeedbackBox = getRequiredElement(documentRef, '#search-feedback');
+  const databaseSelect = getRequiredElement(documentRef, '#database-select');
   const sortHeaders = Array.from(
     documentRef.querySelectorAll('.search-table th[data-sort-key]')
   );
@@ -479,10 +485,39 @@ export function initApp({
       results: [],
     },
     isNaturalSearchAvailable: true,
+    selectedDatabase: null,
   };
+
+  const callApi = createApiCaller(fetchImpl, apiBaseUrl, () => state.selectedDatabase);
 
   let currentFeedbackType = null;
   const FEEDBACK_TONE_CLASSES = ['search-feedback-info', 'search-feedback-error'];
+
+  function populateDatabaseOptions(databases, defaultDatabase) {
+    const options = Array.isArray(databases) ? databases : [];
+    databaseSelect.innerHTML = '';
+
+    const defaultOption = documentRef.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Base par défaut';
+    databaseSelect.appendChild(defaultOption);
+
+    options.forEach((databaseName) => {
+      const option = documentRef.createElement('option');
+      option.value = databaseName;
+      option.textContent = databaseName;
+      databaseSelect.appendChild(option);
+    });
+
+    if (defaultDatabase && options.includes(defaultDatabase)) {
+      state.selectedDatabase = defaultDatabase;
+      databaseSelect.value = defaultDatabase;
+      return;
+    }
+
+    state.selectedDatabase = null;
+    databaseSelect.value = '';
+  }
 
   function setNaturalSearchAvailability(isAvailable) {
     state.isNaturalSearchAvailable = Boolean(isAvailable);
@@ -505,6 +540,8 @@ export function initApp({
       if (typeof config?.openai_enabled === 'boolean') {
         setNaturalSearchAvailability(config.openai_enabled);
       }
+      populateDatabaseOptions(config?.available_databases, config?.default_database);
+      await refreshGames();
     } catch (error) {
       console.warn('Impossible de charger la configuration runtime', error);
     }
@@ -854,6 +891,12 @@ export function initApp({
       const sortKey = header?.dataset?.sortKey;
       applySort(sortKey);
     });
+  });
+
+  databaseSelect.addEventListener('change', () => {
+    const selected = databaseSelect.value.trim();
+    state.selectedDatabase = selected || null;
+    refreshGames();
   });
 
   searchBtn.addEventListener('click', handleSearch);

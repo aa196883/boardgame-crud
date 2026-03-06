@@ -99,8 +99,31 @@ def _connect(db_path: Path) -> sqlite3.Connection:
     return connection
 
 
+def _list_available_databases(base_dir: Path) -> list[str]:
+    return sorted(path.name for path in base_dir.glob("*.db") if path.is_file())
+
+
 def _get_db_path(app: Flask) -> Path:
-    return Path(app.config["GAMES_DB_PATH"])
+    default_db_path = Path(app.config["GAMES_DB_PATH"])
+    requested_db_name = request.args.get("db")
+
+    if not requested_db_name:
+        return default_db_path
+
+    candidate = Path(requested_db_name)
+    if (
+        candidate.name != requested_db_name
+        or candidate.suffix.lower() != ".db"
+    ):
+        abort(400, description="Invalid database name.")
+
+    db_directory = Path(app.config["DB_DIRECTORY"])
+    requested_path = db_directory / candidate.name
+
+    if not requested_path.exists() or not requested_path.is_file():
+        abort(404, description="Database not found.")
+
+    return requested_path
 
 
 def create_app(db_path: Optional[Path | str] = None) -> Flask:
@@ -112,6 +135,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     app = Flask(__name__)
     app.config["GAMES_DB_PATH"] = str(db_path)
+    app.config["DB_DIRECTORY"] = str(db_path.parent)
     app.config["JSON_SORT_KEYS"] = False
 
     CORS(app)
@@ -119,7 +143,14 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
 
     @app.get("/api/config")
     def get_runtime_config() -> Any:
-        return jsonify({"openai_enabled": is_openai_available()})
+        db_directory = Path(app.config["DB_DIRECTORY"])
+        return jsonify(
+            {
+                "openai_enabled": is_openai_available(),
+                "default_database": Path(app.config["GAMES_DB_PATH"]).name,
+                "available_databases": _list_available_databases(db_directory),
+            }
+        )
 
     @app.get("/api/games")
     def list_games() -> Any:

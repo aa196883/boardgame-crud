@@ -217,3 +217,63 @@ def test_runtime_config_exposes_openai_availability(client):
     assert response.status_code == 200
     payload = response.get_json()
     assert isinstance(payload.get("openai_enabled"), bool)
+
+
+def test_runtime_config_exposes_available_databases(client, app, tmp_path):
+    second_db = tmp_path / "games_alt.db"
+    with sqlite3.connect(second_db) as connection:
+        connection.execute(CREATE_TABLE_SQL)
+
+    response = client.get("/api/config")
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["default_database"] == "games.db"
+    assert "games.db" in payload["available_databases"]
+    assert "games_alt.db" in payload["available_databases"]
+
+
+def test_database_can_be_selected_via_query_param(client, app, tmp_path):
+    second_db = tmp_path / "games_alt.db"
+    with sqlite3.connect(second_db) as connection:
+        connection.execute(CREATE_TABLE_SQL)
+        seed = BoardGame(name="Alt Game")
+        connection.execute(
+            f"""
+            INSERT INTO {TABLE_NAME} (
+                nom_du_jeu,
+                temps_de_jeu,
+                duree_min_minutes,
+                duree_max_minutes,
+                nombre_de_joueurs,
+                joueurs_min,
+                joueurs_max,
+                en_equipe,
+                support_particulier,
+                type_de_jeu,
+                tout_le_monde_peut_jouer
+            ) VALUES (
+                :nom_du_jeu,
+                :temps_de_jeu,
+                :duree_min_minutes,
+                :duree_max_minutes,
+                :nombre_de_joueurs,
+                :joueurs_min,
+                :joueurs_max,
+                :en_equipe,
+                :support_particulier,
+                :type_de_jeu,
+                :tout_le_monde_peut_jouer
+            )
+            """,
+            seed.to_db_params(),
+        )
+
+    response = client.get("/api/games", query_string={"db": "games_alt.db"})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload[0]["name"] == "Alt Game"
+
+
+def test_rejects_invalid_database_name(client):
+    response = client.get("/api/games", query_string={"db": "../games.db"})
+    assert response.status_code == 400

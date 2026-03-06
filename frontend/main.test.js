@@ -382,6 +382,7 @@ function createAppTestHarness() {
     '#search-feedback',
     new TestElement({ tagName: 'div', classNames: ['search-feedback', 'hidden'] }),
   );
+  const databaseSelect = documentRef.register('#database-select', new TestElement({ tagName: 'select' }));
 
   const thName = new TestElement({ tagName: 'th' });
   thName.setAttribute('data-sort-key', 'name');
@@ -434,6 +435,7 @@ function createAppTestHarness() {
       emptyState,
       searchLoading,
       searchFeedback,
+      databaseSelect,
       adminTableBody,
       emptyAdmin,
       formTitle,
@@ -579,5 +581,44 @@ test('initApp disables natural search button when OpenAI key is unavailable', as
   assert.ok(
     elements.searchFeedback.textContent.includes('clé OpenAI manquante'),
     'feedback mentions missing OpenAI key',
+  );
+});
+
+
+test('initApp appends selected database to API calls', async () => {
+  const harness = createAppTestHarness();
+  const { documentRef, elements } = harness;
+
+  const fetchCalls = [];
+  const fetchImpl = async (url) => {
+    fetchCalls.push(url);
+    if (url.includes('/api/config')) {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({
+          openai_enabled: true,
+          default_database: 'games_alt.db',
+          available_databases: ['games.db', 'games_alt.db'],
+        }),
+      };
+    }
+
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => [],
+    };
+  };
+
+  initApp({ documentRef, fetchImpl, baseUrl: '' });
+  await new Promise((resolve) => setTimeout(resolve, 10));
+
+  assert.equal(elements.databaseSelect.value, 'games_alt.db');
+  assert.ok(
+    fetchCalls.some((url) => url.includes('/api/games') && url.includes('db=games_alt.db')),
+    'games endpoint contains selected db parameter',
   );
 });
