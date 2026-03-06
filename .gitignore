@@ -12,3 +12,6 @@ __pycache__/
 # Node / frontend build cache (if we add it later)
 node_modules/
 dist/
+
+# Private DB
+backend/games_private.db
