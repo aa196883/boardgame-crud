@@ -14,9 +14,6 @@ except ImportError:  # pragma: no cover - allows running app.py directly
     from text_to_sql import generate_sql_from_question, is_openai_available, is_sql_safe
 from flask_cors import CORS
 
-# DB_name = "games_private.db"
-DB_name = "games.db"
-
 TABLE_NAME = "jeux"
 
 
@@ -138,7 +135,7 @@ def create_app(db_path: Optional[Path | str] = None) -> Flask:
     """Application factory for the board-game CRUD API."""
 
     if db_path is None:
-        db_path = os.getenv("GAMES_DB_PATH", Path(__file__).with_name(DB_name))
+        db_path = os.getenv("GAMES_DB_PATH", Path(__file__).with_name("games.db"))
     db_path = Path(db_path)
 
     app = Flask(__name__)
